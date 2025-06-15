@@ -41,7 +41,8 @@ fun ResultDisplay(
     lang: AppLanguage,
     label: String,
     value: String?,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    minimal: Boolean = false,
 ) {
     val context = LocalContext.current
 
@@ -55,6 +56,7 @@ fun ResultDisplay(
         val titleStartPadding = if(lang.getLayoutDirection() == LayoutDirection.Ltr) 0.dxp else 12.dxp
         val colStartPadding = if(lang.getLayoutDirection() == LayoutDirection.Ltr) 16.dxp else 4.dxp
         val colEndPadding = if(lang.getLayoutDirection() == LayoutDirection.Ltr) 4.dxp else 16.dxp
+        val valueTextSize = if(minimal) 17.sxp else 22.sxp
 
         Column(
             modifier = Modifier
@@ -70,8 +72,6 @@ fun ResultDisplay(
                 textAlign = TextAlign.Start
             )
 
-            Spacer(modifier = Modifier.height(6.dxp))
-
             CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -81,7 +81,7 @@ fun ResultDisplay(
                     Text(
                         text = value ?: "-",
                         fontWeight = FontWeight.Bold,
-                        fontSize = 18.sxp,
+                        fontSize = valueTextSize,
                         textAlign = TextAlign.Start,
                         modifier = Modifier.weight(1f)
                     )

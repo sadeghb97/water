@@ -145,7 +145,7 @@ fun MainScreen(
                     DropdownMenu(
                         expanded = isLangMenuExpanded.value,
                         onDismissRequest = { isLangMenuExpanded.value = false },
-                        offset = DpOffset(x = 36.dxp, y = 0.dxp)
+                        offset = DpOffset(x = (-5).dxp, y = 0.dxp)
                     ) {
                         DropdownMenuItem(
                             text = { Text("فارسی") },
@@ -213,7 +213,8 @@ fun MainScreen(
                         lang = lang,
                         label = lang.getParameterTitle(result.key),
                         value = result.value?.toString(),
-                        modifier = Modifier.weight(1f)
+                        modifier = Modifier.weight(1f),
+                        minimal = formulaResults.value.size > 1
                     )
                 }
             }
