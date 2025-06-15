@@ -89,6 +89,8 @@ class FaLang : AppLanguage {
     override fun sudokuSolverName() : String = "حل کننده سودوکو"
     override fun sudokuSolverDescription() : String = "با استفاده از این برنامه میتونی همه سودوکوهارو با یک کلیک حل کنی. کاملا آفلاین و بدون تبلیغات."
 
+    override fun githubRepoTitle(): String = "لینک گیتهاب"
+
     override fun getParameterTitle(paramKey: String) : String {
         return when(paramKey){
             //"" -> ""

@@ -88,6 +88,8 @@ class EnLang : AppLanguage {
     override fun sudokuSolverName() : String = "Sudoku Solver"
     override fun sudokuSolverDescription() : String = "Using this app, you can solve all Sudoku puzzles with one click. Completely offline and without ads."
 
+    override fun githubRepoTitle(): String = "Github Link"
+
     override fun getParameterTitle(paramKey: String) : String {
         return when(paramKey){
             //"" -> ""

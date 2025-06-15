@@ -24,6 +24,11 @@ import androidx.compose.ui.platform.LocalTextInputService
 import androidx.compose.ui.text.input.TextFieldValue
 import kotlinx.coroutines.awaitCancellation
 import androidx.compose.foundation.interaction.PressInteraction
+import androidx.compose.material3.LocalTextStyle
+import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDirection
+import androidx.compose.ui.unit.LayoutDirection
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
@@ -45,28 +50,30 @@ fun ParamField(label: String,
         }
     }
 
-    InterceptPlatformTextInput(
-        interceptor = { request, nextHandler ->
-            awaitCancellation()
-        },
-        content = {
-            OutlinedTextField(
-                value = textState.value,
-                onValueChange = {
-                    val filtered = it.text.filter { char -> /*char.isDigit()*/ true }
-                    textState.value = it.copy(text = filtered)
-                },
-                modifier = modifier
-                    .focusRequester(focusRequester),
-                interactionSource = interactionSource,
-                label = { Text(label) },
-                singleLine = true,
-                colors = TextFieldDefaults.colors(
-                    cursorColor = MaterialTheme.colorScheme.primary
+    CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
+        InterceptPlatformTextInput(
+            interceptor = { request, nextHandler ->
+                awaitCancellation()
+            },
+            content = {
+                OutlinedTextField(
+                    value = textState.value,
+                    onValueChange = {
+                        val filtered = it.text.filter { char -> /*char.isDigit()*/ true }
+                        textState.value = it.copy(text = filtered)
+                    },
+                    modifier = modifier
+                        .focusRequester(focusRequester),
+                    interactionSource = interactionSource,
+                    label = { Text(label) },
+                    singleLine = true,
+                    colors = TextFieldDefaults.colors(
+                        cursorColor = MaterialTheme.colorScheme.primary
+                    )
                 )
-            )
-        }
-    )
+            }
+        )
+    }
 
     CompositionLocalProvider(
         LocalTextInputService provides null

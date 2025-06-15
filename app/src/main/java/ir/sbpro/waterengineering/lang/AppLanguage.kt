@@ -84,6 +84,9 @@ interface AppLanguage {
     fun sudokuSolverName() : String
     fun sudokuSolverDescription() : String
 
+    fun githubRepoTitle(): String
+    fun githubRepoUrl(): String = "https://github.com/sadeghb97/watereng_formulas"
+
     fun getParameterTitle(paramKey: String) : String
     fun getFormulaTitle(formulaKey: String) : String
 }
