@@ -18,21 +18,27 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SegmentedButtonDefaults.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.LayoutDirection
 import ir.sbpro.waterengineering.R
+import ir.sbpro.waterengineering.lang.AppLanguage
 import ir.sbpro.waterengineering.utils.copyToClipboard
 import ir.sbpro.waterengineering.utils.dxp
+import ir.sbpro.waterengineering.utils.sxp
 import ir.sbpro.waterengineering.utils.triggerVibration
 
 @Composable
 fun ResultDisplay(
+    lang: AppLanguage,
     label: String,
     value: String?,
     modifier: Modifier = Modifier
@@ -46,9 +52,13 @@ fun ResultDisplay(
         colors = CardDefaults.cardColors(containerColor = Color(0xFFF5F5F5)),
         shape = RoundedCornerShape(16.dxp)
     ) {
+        val titleStartPadding = if(lang.getLayoutDirection() == LayoutDirection.Ltr) 0.dxp else 12.dxp
+        val colStartPadding = if(lang.getLayoutDirection() == LayoutDirection.Ltr) 16.dxp else 4.dxp
+        val colEndPadding = if(lang.getLayoutDirection() == LayoutDirection.Ltr) 4.dxp else 16.dxp
+
         Column(
             modifier = Modifier
-                .padding(horizontal = 16.dxp, vertical = 8.dxp)
+                .padding(start = colStartPadding, end = colEndPadding, top = 8.dxp, bottom = 8.dxp)
                 .fillMaxWidth(),
             horizontalAlignment = Alignment.Start
         ) {
@@ -56,38 +66,41 @@ fun ResultDisplay(
                 text = label,
                 style = MaterialTheme.typography.titleSmall,
                 color = Color.Gray,
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.padding(start = titleStartPadding).fillMaxWidth(),
                 textAlign = TextAlign.Start
             )
 
             Spacer(modifier = Modifier.height(6.dxp))
 
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Text(
-                    text = value ?: "-",
-                    style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
-                    textAlign = TextAlign.Start,
-                    modifier = Modifier.weight(1f)
-                )
-
-                IconButton(
-                    onClick = {
-                        value?.let {
-                            copyToClipboard(context, "Result", it)
-                            triggerVibration(context, 50, 50)
-                        }
-                    }
+            CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.content_copy),
-                        contentDescription = null,
-                        colorFilter = ColorFilter.tint(Color.Black),
-                        modifier = Modifier.size(24.dxp),
+                    Text(
+                        text = value ?: "-",
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 18.sxp,
+                        textAlign = TextAlign.Start,
+                        modifier = Modifier.weight(1f)
                     )
+
+                    IconButton(
+                        onClick = {
+                            value?.let {
+                                copyToClipboard(context, "Result", it)
+                                triggerVibration(context, 50, 50)
+                            }
+                        }
+                    ) {
+                        Image(
+                            painter = painterResource(id = R.drawable.content_copy),
+                            contentDescription = null,
+                            colorFilter = ColorFilter.tint(Color.Black),
+                            modifier = Modifier.size(24.dxp),
+                        )
+                    }
                 }
             }
         }

@@ -210,6 +210,7 @@ fun MainScreen(
             ) {
                 formulaResults.value.forEachIndexed { rIndex, result ->
                     ResultDisplay(
+                        lang = lang,
                         label = lang.getParameterTitle(result.key),
                         value = result.value?.toString(),
                         modifier = Modifier.weight(1f)

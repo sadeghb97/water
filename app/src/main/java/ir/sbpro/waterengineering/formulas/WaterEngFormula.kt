@@ -30,7 +30,6 @@ class ParametersState(val params: List<MutableState<TextFieldValue>>, val focuse
                 val pureValue = appDataStore.getParamSavedValue(param)
                 val intValue = pureValue.toInt()
                 val hasDecimal = pureValue % 1.0f != 0.0f
-                println("XQQQ: $pureValue - $intValue - $hasDecimal")
 
                 paramsList.add(mutableStateOf(TextFieldValue(
                     if(hasDecimal) pureValue.toString() else intValue.toString()
@@ -39,6 +38,14 @@ class ParametersState(val params: List<MutableState<TextFieldValue>>, val focuse
             }
 
             return ParametersState(paramsList, focusesList)
+        }
+
+        fun safeFloat(str: String) : Float {
+            return try {
+                str.toFloat()
+            } catch (ex: Exception){
+                1f
+            }
         }
     }
 }
