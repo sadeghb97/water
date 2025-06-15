@@ -42,6 +42,7 @@ import ir.sbpro.waterengineering.AppDataStore
 import ir.sbpro.waterengineering.AppSingleton
 import ir.sbpro.waterengineering.R
 import ir.sbpro.waterengineering.formulas.DFormula
+import ir.sbpro.waterengineering.formulas.FormulaResult
 import ir.sbpro.waterengineering.formulas.HFormula
 import ir.sbpro.waterengineering.formulas.ParametersState
 import ir.sbpro.waterengineering.formulas.VFormula
@@ -49,6 +50,7 @@ import ir.sbpro.waterengineering.formulas.WaterEngFormula
 import ir.sbpro.waterengineering.lang.AppLanguage
 import ir.sbpro.waterengineering.ui.components.NumberPad
 import ir.sbpro.waterengineering.ui.components.ParamField
+import ir.sbpro.waterengineering.ui.components.ResultDisplay
 import ir.sbpro.waterengineering.ui.components.ScreenWrapper
 import ir.sbpro.waterengineering.ui.dialogs.AboutUsDialog
 import ir.sbpro.waterengineering.utils.dxp
@@ -78,12 +80,17 @@ fun MainScreen(
     val activeFormulaIndex = remember { mutableIntStateOf(0) }
     val activeParamIndex: MutableState<Int?> = remember { mutableStateOf(null) }
 
-    val activeFormula = formulasList[activeFormulaIndex.intValue]
-    val parametersState = remember { mutableStateOf(ParametersState.getParams(activeFormula.formulaKey, activeFormula.parameters.size)) }
+    val activeFormula = remember { mutableStateOf(formulasList[activeFormulaIndex.intValue]) }
+    val parametersState = remember {
+        mutableStateOf(ParametersState.getParams(activeFormula.value.formulaKey, activeFormula.value.parameters.size))
+    }
+    val formulaResult: MutableState<List<FormulaResult>> = remember {
+        mutableStateOf(activeFormula.value.getResults(parametersState.value))
+    }
+
     val rowCells = remember { mutableIntStateOf(
-        if(activeFormula.parameters.size <= 3) activeFormula.parameters.size
-        else if (activeFormula.parameters.size == 4) 2
-        else 3
+        if(activeFormula.value.parameters.size <= 1) 1
+        else 2
     ) }
 
     val dialogShowing = aboutShow.value
@@ -179,18 +186,34 @@ fun MainScreen(
             LazyVerticalGrid(
                 columns = GridCells.Fixed(rowCells.intValue),
                 modifier = Modifier
-                    .padding(start = 20.dxp, end = 20.dxp, bottom = 12.dxp)
+                    .padding(start = 20.dxp, end = 20.dxp, bottom = 10.dxp)
                     .fillMaxWidth(),
-                verticalArrangement = Arrangement.spacedBy(12.dxp),
+                verticalArrangement = Arrangement.spacedBy(3.dxp),
                 horizontalArrangement = Arrangement.spacedBy(12.dxp),
                 userScrollEnabled = false
             ) {
                 parametersState.value.params.forEachIndexed { index, item ->
                     item {
-                        ParamField(index.toString(), item, parametersState.value.focuses[index]){
+                        ParamField(
+                            label = lang.getParameterTitle(activeFormula.value.parameters[index]),
+                            textState = item,
+                            focusRequester = parametersState.value.focuses[index]
+                        ){
                             activeParamIndex.value = index
                         }
                     }
+                }
+            }
+
+            Row(
+                modifier = Modifier.padding(horizontal = 14.dxp)
+            ) {
+                formulaResult.value.forEachIndexed { rIndex, result ->
+                    ResultDisplay(
+                        label = lang.getParameterTitle(result.key),
+                        value = result.value?.toString(),
+                        modifier = Modifier.weight(1f)
+                    )
                 }
             }
         }
@@ -208,13 +231,13 @@ fun MainScreen(
                     formulas = formulasList,
                     onFormulaChange = {
                         activeFormulaIndex.intValue = it
-                        val cf = formulasList[activeFormulaIndex.intValue]
+                        activeFormula.value = formulasList[activeFormulaIndex.intValue]
                         rowCells.intValue =
-                            if (cf.parameters.size <= 3) cf.parameters.size
-                            else if (cf.parameters.size == 4) 2
-                            else 3
+                            if(activeFormula.value.parameters.size <= 1) 1
+                            else 2
                         parametersState.value =
-                            ParametersState.getParams(cf.formulaKey, cf.parameters.size)
+                            ParametersState.getParams(activeFormula.value.formulaKey, activeFormula.value.parameters.size)
+                        formulaResult.value = activeFormula.value.getResults(parametersState.value)
                     },
                     onNextParameter = {
                         if (activeParamIndex.value == null) activeParamIndex.value = 0
@@ -229,7 +252,7 @@ fun MainScreen(
                         )
                     }
                 ) {
-
+                    formulaResult.value = activeFormula.value.getResults(parametersState.value)
                 }
             }
         }

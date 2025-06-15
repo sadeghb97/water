@@ -92,15 +92,20 @@ class EnLang : AppLanguage {
 
     override fun getParameterTitle(paramKey: String) : String {
         return when(paramKey){
-            //"" -> ""
+            "x1" -> "X1"
+            "x2" -> "X2"
+            "y1" -> "Y1"
+            "y2" -> "Y2"
+            "dis" -> "Distance (m)"
+            "q" -> "Flow Rate (m³/s)"
+            "d" -> "Pipe diameter (mm)"
+            "v" -> "Flow velocity (m/s)"
+            "n" -> "Number of bends"
+            "f" -> "Correction factor"
+            "l" -> "Pipe length (m)"
+            "c" -> "Hazen-Williams coefficient"
+            "h" -> "Head loss"
             else -> paramKey
-        }
-    }
-
-    override fun getFormulaTitle(formulaKey: String) : String {
-        return when(formulaKey){
-            //"" -> ""
-            else -> formulaKey
         }
     }
 }

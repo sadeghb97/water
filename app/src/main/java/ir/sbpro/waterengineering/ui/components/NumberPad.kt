@@ -32,6 +32,7 @@ import ir.sbpro.waterengineering.utils.copyToClipboard
 import ir.sbpro.waterengineering.utils.dxp
 import ir.sbpro.waterengineering.utils.getTextFromClipboard
 import ir.sbpro.waterengineering.utils.sxp
+import ir.sbpro.waterengineering.utils.triggerVibration
 
 
 @Composable
@@ -105,7 +106,8 @@ fun NumberPad(
 
         item() {
             KeyTextBox(".") {
-                updateTextValue(".")
+                if(activeParam != null && !activeParam.value.text.contains("."))
+                    updateTextValue(".")
             }
         }
 
@@ -147,6 +149,7 @@ fun NumberPad(
             KeySymbolBox(R.drawable.content_copy) {
                 activeParam?.let {
                     copyToClipboard(context, "Parameter", it.value.text)
+                    triggerVibration(context, 50, 50)
                 }
             }
         }
@@ -155,7 +158,8 @@ fun NumberPad(
             KeySymbolBox(R.drawable.content_paste) {
                 activeParam?.let { param ->
                     getTextFromClipboard(context)?.let { clipText ->
-                        param.value = param.value.copy(clipText)
+                        param.value = param.value.copy(text = clipText, selection = TextRange(clipText.length))
+                        triggerVibration(context, 50, 50)
                     }
                 }
             }

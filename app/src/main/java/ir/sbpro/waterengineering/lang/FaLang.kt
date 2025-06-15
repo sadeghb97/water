@@ -93,15 +93,20 @@ class FaLang : AppLanguage {
 
     override fun getParameterTitle(paramKey: String) : String {
         return when(paramKey){
-            //"" -> ""
+            "x1" -> "طول نقطه اول"
+            "x2" -> "طول نقطه دوم"
+            "y1" -> "عرض نقطه اول"
+            "y2" -> "عرض نقطه دوم"
+            "dis" -> "فاصله (متر)"
+            "q" -> "دبی جریان (لیتر بر ثانیه)"
+            "d" -> "قطر داخلی لوله (میلی‌متر)"
+            "v" -> "سرعت جریان در لوله (متر بر ثانیه)"
+            "n" -> "تعداد خروجی"
+            "f" -> "ضریب اصلاح"
+            "l" -> "طول لوله (متر)"
+            "c" -> "ضریب زبری لوله"
+            "h" -> "افت هد"
             else -> paramKey
-        }
-    }
-
-    override fun getFormulaTitle(formulaKey: String) : String {
-        return when(formulaKey){
-            //"" -> ""
-            else -> formulaKey
         }
     }
 }

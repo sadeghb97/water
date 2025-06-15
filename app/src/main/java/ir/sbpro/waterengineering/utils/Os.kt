@@ -8,6 +8,9 @@ import android.content.Context
 import android.content.res.Resources
 import android.graphics.Color.TRANSPARENT
 import android.os.Build
+import android.os.VibrationEffect
+import android.os.Vibrator
+import android.os.VibratorManager
 import android.view.View
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
@@ -55,6 +58,25 @@ fun getTextFromClipboard(context: Context): String? {
         return item.text?.toString()
     }
     return null
+}
+
+fun triggerVibration(context: Context, durationMs: Long = 50, amplitude: Int = 80) {
+    val vibrator: Vibrator? = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+        val vibratorManager = context.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as? VibratorManager
+        vibratorManager?.defaultVibrator
+    } else {
+        context.getSystemService(Context.VIBRATOR_SERVICE) as? Vibrator
+    }
+
+    vibrator?.let {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val effect = VibrationEffect.createOneShot(durationMs, amplitude)
+            it.vibrate(effect)
+        } else {
+            @Suppress("DEPRECATION")
+            it.vibrate(durationMs)
+        }
+    }
 }
 
 

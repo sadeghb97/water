@@ -15,7 +15,7 @@ abstract class WaterEngFormula(val formulaKey: String, val parameters: List<Stri
 
 data class FormulaResult(
     val key: String,
-    val value: Float
+    val value: Float?
 )
 
 class ParametersState(val params: List<MutableState<TextFieldValue>>, val focuses: List<FocusRequester>){
