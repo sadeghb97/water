@@ -36,7 +36,9 @@ fun ParamField(label: String,
     val finalFocusRequester = focusRequester ?: remember { FocusRequester() }
     val interactionSource = remember { MutableInteractionSource() }
 
-    // Collect interactions
+    val labelLightColor = Color.White
+    val labelDarkColor = Color.Black
+
     LaunchedEffect(interactionSource) {
         interactionSource.interactions.collect { interaction ->
             if (interaction is PressInteraction.Press) {
@@ -65,8 +67,8 @@ fun ParamField(label: String,
                     readOnly = readOnly,
                     colors = TextFieldDefaults.colors(
                         cursorColor = MaterialTheme.colorScheme.primary,
-                        focusedLabelColor = Color.White,
-                        unfocusedLabelColor = Color.Black,
+                        focusedLabelColor = labelLightColor,
+                        unfocusedLabelColor = if(textState.value.text.isEmpty()) labelDarkColor else labelLightColor
                     )
                 )
             }

@@ -82,9 +82,9 @@ fun MainScreen(
 
     val activeFormula = remember { mutableStateOf(formulasList[activeFormulaIndex.intValue]) }
     val parametersState = remember {
-        mutableStateOf(ParametersState.getParams(activeFormula.value.formulaKey, activeFormula.value.parameters.size))
+        mutableStateOf(ParametersState.getParams(activeFormula.value))
     }
-    val formulaResult: MutableState<List<FormulaResult>> = remember {
+    val formulaResults: MutableState<List<FormulaResult>> = remember {
         mutableStateOf(activeFormula.value.getResults(parametersState.value))
     }
 
@@ -154,7 +154,7 @@ fun MainScreen(
                                     appDataStore.safeTransaction {
                                         it[AppDataStore.LANGUAGE_KEY] = "fa"
                                     }
-                                    appSingleton.saveLanguage(context, "fa")
+                                    appDataStore.saveSharedLanguage("fa")
                                 }
                                 isLangMenuExpanded.value = false
                             },
@@ -170,7 +170,7 @@ fun MainScreen(
                                     appDataStore.safeTransaction {
                                         it[AppDataStore.LANGUAGE_KEY] = "en"
                                     }
-                                    appSingleton.saveLanguage(context, "en")
+                                    appDataStore.saveSharedLanguage("en")
                                 }
                                 isLangMenuExpanded.value = false
                             },
@@ -208,7 +208,7 @@ fun MainScreen(
             Row(
                 modifier = Modifier.padding(horizontal = 14.dxp)
             ) {
-                formulaResult.value.forEachIndexed { rIndex, result ->
+                formulaResults.value.forEachIndexed { rIndex, result ->
                     ResultDisplay(
                         label = lang.getParameterTitle(result.key),
                         value = result.value?.toString(),
@@ -218,42 +218,42 @@ fun MainScreen(
             }
         }
 
-        CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
-            Column(
-                verticalArrangement = Arrangement.Bottom,
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.fillMaxWidth()
-                    .height(bottomBoxHeight)
-                    .align(Alignment.BottomCenter)
-            ) {
-                NumberPad(
-                    activeParam = if (activeParamIndex.value != null) parametersState.value.params[activeParamIndex.value!!] else null,
-                    formulas = formulasList,
-                    onFormulaChange = {
-                        activeFormulaIndex.intValue = it
-                        activeFormula.value = formulasList[activeFormulaIndex.intValue]
-                        rowCells.intValue =
-                            if(activeFormula.value.parameters.size <= 1) 1
-                            else 2
-                        parametersState.value =
-                            ParametersState.getParams(activeFormula.value.formulaKey, activeFormula.value.parameters.size)
-                        formulaResult.value = activeFormula.value.getResults(parametersState.value)
-                    },
-                    onNextParameter = {
-                        if (activeParamIndex.value == null) activeParamIndex.value = 0
-                        else if (activeParamIndex.value!! < (parametersState.value.params.size - 1))
-                            activeParamIndex.value = activeParamIndex.value!! + 1
-                        else activeParamIndex.value = 0
+        Column(
+            verticalArrangement = Arrangement.Bottom,
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.fillMaxWidth()
+                .height(bottomBoxHeight)
+                .align(Alignment.BottomCenter)
+        ) {
+            NumberPad(
+                lang = lang,
+                activeParam = if (activeParamIndex.value != null) parametersState.value.params[activeParamIndex.value!!] else null,
+                formulas = formulasList,
+                onFormulaChange = {
+                    activeFormulaIndex.intValue = it
+                    activeFormula.value = formulasList[activeFormulaIndex.intValue]
+                    rowCells.intValue =
+                        if(activeFormula.value.parameters.size <= 1) 1
+                        else 2
+                    parametersState.value =
+                        ParametersState.getParams(activeFormula.value)
+                    formulaResults.value = activeFormula.value.getResults(parametersState.value)
+                },
+                onNextParameter = {
+                    if (activeParamIndex.value == null) activeParamIndex.value = 0
+                    else if (activeParamIndex.value!! < (parametersState.value.params.size - 1))
+                        activeParamIndex.value = activeParamIndex.value!! + 1
+                    else activeParamIndex.value = 0
 
-                        val nextState = parametersState.value.params[activeParamIndex.value!!]
-                        parametersState.value.focuses[activeParamIndex.value!!].requestFocus()
-                        nextState.value = nextState.value.copy(
-                            selection = TextRange(0, nextState.value.text.length)
-                        )
-                    }
-                ) {
-                    formulaResult.value = activeFormula.value.getResults(parametersState.value)
+                    val nextState = parametersState.value.params[activeParamIndex.value!!]
+                    parametersState.value.focuses[activeParamIndex.value!!].requestFocus()
+                    nextState.value = nextState.value.copy(
+                        selection = TextRange(0, nextState.value.text.length)
+                    )
                 }
+            ) {
+                formulaResults.value = activeFormula.value.getResults(parametersState.value)
+                appDataStore.saveFormulaResult(activeFormula.value, parametersState.value, formulaResults.value)
             }
         }
     }

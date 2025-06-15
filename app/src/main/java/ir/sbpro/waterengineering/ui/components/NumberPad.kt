@@ -1,5 +1,6 @@
 package ir.sbpro.waterengineering.ui.components
 
+import android.view.MotionEvent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -15,28 +16,42 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableLongStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.input.pointer.pointerInteropFilter
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.unit.LayoutDirection
 import ir.sbpro.waterengineering.R
 import ir.sbpro.waterengineering.formulas.WaterEngFormula
+import ir.sbpro.waterengineering.lang.AppLanguage
 import ir.sbpro.waterengineering.utils.copyToClipboard
 import ir.sbpro.waterengineering.utils.dxp
 import ir.sbpro.waterengineering.utils.getTextFromClipboard
 import ir.sbpro.waterengineering.utils.sxp
 import ir.sbpro.waterengineering.utils.triggerVibration
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 
 @Composable
 fun NumberPad(
+    lang: AppLanguage,
     activeParam: MutableState<TextFieldValue>?,
     formulas: List<WaterEngFormula>,
     onFormulaChange: (Int) -> Unit,
@@ -45,6 +60,7 @@ fun NumberPad(
     onCalculate: () -> Unit,
 ) {
     val context = LocalContext.current
+    val cs = rememberCoroutineScope()
 
     val buttons = listOf(
         "1", "2", "3",
@@ -52,136 +68,192 @@ fun NumberPad(
         "7", "8", "9", "0"
     )
 
-    LazyVerticalGrid(
-        columns = GridCells.Fixed(3),
-        modifier = modifier
-            .padding(vertical = 12.dxp, horizontal = 40.dxp)
-            .fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(12.dxp),
-        horizontalArrangement = Arrangement.spacedBy(12.dxp),
-        userScrollEnabled = false
-    ) {
-        formulas.forEachIndexed { index, item ->
-            item {
-                KeyTextBox(item.formulaKey.uppercase()) {
-                    onFormulaChange(index)
+    CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
+        LazyVerticalGrid(
+            columns = GridCells.Fixed(3),
+            modifier = modifier
+                .padding(vertical = 12.dxp, horizontal = 40.dxp)
+                .fillMaxWidth(),
+            verticalArrangement = Arrangement.spacedBy(12.dxp),
+            horizontalArrangement = Arrangement.spacedBy(12.dxp),
+            userScrollEnabled = false
+        ) {
+            formulas.forEachIndexed { index, item ->
+                item {
+                    KeyTextBox(cs, item.formulaKey.uppercase()) {
+                        onFormulaChange(index)
+                    }
                 }
             }
         }
     }
 
-    LazyVerticalGrid(
-        columns = GridCells.Fixed(4),
-        modifier = modifier
-            .padding(vertical = 12.dxp, horizontal = 40.dxp)
-            .fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(12.dxp),
-        horizontalArrangement = Arrangement.spacedBy(12.dxp),
-        userScrollEnabled = false
-    ) {
-        val updateTextValue: (String) -> Unit = {
-            if(activeParam != null) {
-                val oldValue = activeParam.value
-                val cursorPosition = oldValue.selection.start
+    CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
+        LazyVerticalGrid(
+            columns = GridCells.Fixed(4),
+            modifier = modifier
+                .padding(start = 40.dxp, end = 40.dxp, top = 12.dxp)
+                .fillMaxWidth(),
+            verticalArrangement = Arrangement.spacedBy(12.dxp),
+            horizontalArrangement = Arrangement.spacedBy(12.dxp),
+            userScrollEnabled = false
+        ) {
+            val updateTextValue: (String) -> Unit = {
+                if (activeParam != null) {
+                    val oldValue = activeParam.value
+                    val cursorPosition = oldValue.selection.start
 
-                val newText = buildString {
-                    append(oldValue.text.substring(0, cursorPosition))
-                    append(it)
-                    append(oldValue.text.substring(cursorPosition))
+                    val newText = buildString {
+                        append(oldValue.text.substring(0, cursorPosition))
+                        append(it)
+                        append(oldValue.text.substring(cursorPosition))
+                    }
+
+                    val newCursorPosition = cursorPosition + it.length
+                    activeParam.value = TextFieldValue(
+                        text = newText,
+                        selection = TextRange(newCursorPosition)
+                    )
                 }
-
-                val newCursorPosition = cursorPosition + it.length
-                activeParam.value = TextFieldValue(
-                    text = newText,
-                    selection = TextRange(newCursorPosition)
-                )
             }
-        }
 
-        items(buttons.size) { index ->
-            KeyTextBox(buttons[index]) {
-                updateTextValue(buttons[index])
+            items(buttons.size) { index ->
+                KeyTextBox(cs, buttons[index]) {
+                    updateTextValue(buttons[index])
+                }
             }
-        }
 
-        item() {
-            KeyTextBox(".") {
-                if(activeParam != null && !activeParam.value.text.contains("."))
-                    updateTextValue(".")
+            item() {
+                KeyTextBox(cs, ".") {
+                    if (activeParam != null && !activeParam.value.text.contains("."))
+                        updateTextValue(".")
+                }
             }
-        }
 
-        item() {
-            KeySymbolBox(R.drawable.backspace) {
-                if(activeParam != null) {
-                    val value = activeParam.value
-                    val cursorPos = value.selection.start
-                    val text = value.text
-
-                    if (cursorPos > 0) {
-                        val newText = buildString {
-                            append(text.substring(0, cursorPos - 1))
-                            append(text.substring(cursorPos))
-                        }
-
+            item() {
+                KeySymbolBox(cs, R.drawable.backspace, onLongClick = {
+                    if (activeParam != null) {
                         activeParam.value = TextFieldValue(
-                            text = newText,
-                            selection = TextRange(cursorPos - 1)
+                            text = "",
+                            selection = TextRange(0)
                         )
+                    }
+                }) {
+                    if (activeParam != null) {
+                        val value = activeParam.value
+                        val cursorPos = value.selection.start
+                        val text = value.text
+
+                        if (cursorPos > 0) {
+                            val newText = buildString {
+                                append(text.substring(0, cursorPos - 1))
+                                append(text.substring(cursorPos))
+                            }
+
+                            activeParam.value = TextFieldValue(
+                                text = newText,
+                                selection = TextRange(cursorPos - 1)
+                            )
+                        }
                     }
                 }
             }
         }
+    }
 
-        /*item(span = { GridItemSpan(2) }) {
-            NumberKeyBox("->") {
-                onNextParameter()
-            }
-        }*/
-
-        item {
-            KeySymbolBox(R.drawable.arrow_right) {
-                onNextParameter()
-            }
-        }
-
-        item {
-            KeySymbolBox(R.drawable.content_copy) {
-                activeParam?.let {
-                    copyToClipboard(context, "Parameter", it.value.text)
-                    triggerVibration(context, 50, 50)
-                }
-            }
-        }
-
-        item {
-            KeySymbolBox(R.drawable.content_paste) {
-                activeParam?.let { param ->
-                    getTextFromClipboard(context)?.let { clipText ->
-                        param.value = param.value.copy(text = clipText, selection = TextRange(clipText.length))
+    CompositionLocalProvider(LocalLayoutDirection provides lang.getLayoutDirection()) {
+        LazyVerticalGrid(
+            columns = GridCells.Fixed(4),
+            modifier = modifier
+                .padding(start = 40.dxp, end = 40.dxp, top = 12.dxp)
+                .fillMaxWidth(),
+            verticalArrangement = Arrangement.spacedBy(12.dxp),
+            horizontalArrangement = Arrangement.spacedBy(12.dxp),
+            userScrollEnabled = false
+        ) {
+            item {
+                KeySymbolBox(cs, R.drawable.content_copy) {
+                    activeParam?.let {
+                        copyToClipboard(context, "Parameter", it.value.text)
                         triggerVibration(context, 50, 50)
                     }
                 }
             }
-        }
 
-        item {
-            KeySymbolBox(R.drawable.function) {
-                onCalculate()
+            item {
+                KeySymbolBox(cs, R.drawable.content_paste) {
+                    activeParam?.let { param ->
+                        getTextFromClipboard(context)?.let { clipText ->
+                            param.value = param.value.copy(
+                                text = clipText,
+                                selection = TextRange(clipText.length)
+                            )
+                            triggerVibration(context, 50, 50)
+                        }
+                    }
+                }
+            }
+
+            item {
+                KeySymbolBox(cs,
+                    imageId = if(lang.getLayoutDirection() == LayoutDirection.Ltr) R.drawable.arrow_right
+                    else R.drawable.arrow_left
+                ) {
+                    onNextParameter()
+                }
+            }
+
+            item {
+                KeySymbolBox(cs, R.drawable.function) {
+                    onCalculate()
+                }
             }
         }
     }
 }
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun KeyBox(onClick: () -> Unit, content: @Composable BoxScope.() -> Unit){
+fun KeyBox(
+    coroutineScope: CoroutineScope,
+    onClick: () -> Unit,
+    onLongClick: () -> Unit = {},
+    content: @Composable BoxScope.() -> Unit
+){
+    val pressCounter = remember { mutableIntStateOf(0) }
+    val pressedTime = remember { mutableLongStateOf(0L) }
+
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .height(48.dxp)
             .clip(RoundedCornerShape(12.dxp))
             .background(Color(0xFFEEEEEE))
-            .clickable { onClick() },
+            .pointerInteropFilter { event ->
+                when (event.action) {
+                    MotionEvent.ACTION_DOWN -> {
+                        pressedTime.longValue = System.currentTimeMillis()
+                        pressCounter.intValue++
+                        val pv = pressCounter.intValue
+                        coroutineScope.launch {
+                            delay(750)
+                            if(pressCounter.intValue == pv && pressedTime.longValue > 0){
+                                onLongClick()
+                                pressedTime.longValue = 0L
+                            }
+                        }
+                        true
+                    }
+                    MotionEvent.ACTION_UP -> {
+                        if(pressedTime.longValue > 0){
+                            onClick()
+                            pressedTime.longValue = 0L
+                        }
+                        true
+                    }
+                    else -> false
+                }
+            },
         contentAlignment = Alignment.Center
     ) {
         content()
@@ -189,8 +261,13 @@ fun KeyBox(onClick: () -> Unit, content: @Composable BoxScope.() -> Unit){
 }
 
 @Composable
-fun KeyTextBox(text: String, onClick: () -> Unit){
-    KeyBox(onClick = onClick) {
+fun KeyTextBox(
+    coroutineScope: CoroutineScope,
+    text: String,
+    onLongClick: () -> Unit = {},
+    onClick: () -> Unit,
+){
+    KeyBox(coroutineScope = coroutineScope, onClick = onClick, onLongClick = onLongClick) {
         Text(
             text = text,
             fontSize = 24.sxp,
@@ -200,8 +277,13 @@ fun KeyTextBox(text: String, onClick: () -> Unit){
 }
 
 @Composable
-fun KeySymbolBox(imageId: Int, onClick: () -> Unit){
-    KeyBox(onClick = onClick) {
+fun KeySymbolBox(
+    coroutineScope: CoroutineScope,
+    imageId: Int,
+    onLongClick: () -> Unit = {},
+    onClick: () -> Unit,
+){
+    KeyBox(coroutineScope = coroutineScope, onClick = onClick, onLongClick = onLongClick) {
         Image(
             painter = painterResource(id = imageId),
             contentDescription = null,
