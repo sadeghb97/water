@@ -102,7 +102,11 @@ fun MainScreen(
         aboutShow.value = false
     }
 
-    ScreenWrapper {
+    ScreenWrapper(
+        onClick = {
+            focusManager.clearFocus()
+        }
+    ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Top,
@@ -202,7 +206,16 @@ fun MainScreen(
                             textState = item,
                             focusRequester = parametersState.value.focuses[index]
                         ){
-                            activeParamIndex.value = index
+                            if(activeParamIndex.value != index) {
+                                activeParamIndex.value = index
+                                coroutineScope.launch {
+                                    delay(240)
+                                    val ps = parametersState.value.params[index]
+                                    ps.value = ps.value.copy(
+                                        selection = TextRange(0, ps.value.text.length)
+                                    )
+                                }
+                            }
                         }
                     }
                 }
