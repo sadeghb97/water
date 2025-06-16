@@ -30,7 +30,7 @@ fun ScreenWrapper(
                     colors = listOf(Color(0xFFB388FF), Color(0xFF8C9EFF))
                 )
             )
-            .padding(bottom = 80.dxp)
+            .padding(bottom = 75.dxp)
             .clickable(indication = null, interactionSource = interactionSource) {
                 onClick()
             }

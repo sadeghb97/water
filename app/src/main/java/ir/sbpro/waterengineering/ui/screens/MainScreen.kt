@@ -110,7 +110,7 @@ fun MainScreen(
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Top,
-            modifier = Modifier.padding(bottom = bottomBoxHeight, top = 30.dxp)
+            modifier = Modifier.padding(bottom = bottomBoxHeight, top = 35.dxp)
                 .fillMaxSize()
         ) {
             Row(
