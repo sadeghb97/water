@@ -103,7 +103,7 @@ class EnLang : AppLanguage {
             "n" -> "Number of bends"
             "f" -> "Correction factor"
             "l" -> "Pipe length (m)"
-            "c" -> "Hazen-Williams coefficient"
+            "c" -> "H-W coefficient"
             "h" -> "Head loss"
             else -> paramKey
         }

@@ -33,6 +33,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextRange
@@ -72,6 +73,8 @@ fun MainScreen(
     )
 
     val context = LocalContext.current
+    val focusManager = LocalFocusManager.current
+
     val coroutineScope = rememberCoroutineScope()
     val lang by appDataStore.languageFlow.collectAsState(appSingleton.startLanguage)
     var isLangMenuExpanded = remember { mutableStateOf(false) }
@@ -232,6 +235,8 @@ fun MainScreen(
                 activeParam = if (activeParamIndex.value != null) parametersState.value.params[activeParamIndex.value!!] else null,
                 formulas = formulasList,
                 onFormulaChange = {
+                    focusManager.clearFocus()
+                    activeParamIndex.value = 0
                     activeFormulaIndex.intValue = it
                     activeFormula.value = formulasList[activeFormulaIndex.intValue]
                     rowCells.intValue =
