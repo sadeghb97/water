@@ -23,8 +23,10 @@ object SizeInterface {
         sh = configuration.screenHeightDp
         sw = configuration.screenWidthDp
 
-        shr = sh.toDouble() / 773
-        swr = sw.toDouble() / 411
+        println("XQQQSize: ($sh - $sw)")
+
+        shr = sh.toDouble() / 795
+        swr = sw.toDouble() / 393
         minsm = if(shr < swr) shr else swr
     }
 }
