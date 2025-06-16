@@ -113,20 +113,35 @@ fun NumberPad(
             ) {
                 val updateTextValue: (String) -> Unit = {
                     if (activeParam != null) {
-                        val oldValue = activeParam.value
-                        val cursorPosition = oldValue.selection.start
-
-                        val newText = buildString {
-                            append(oldValue.text.substring(0, cursorPosition))
-                            append(it)
-                            append(oldValue.text.substring(cursorPosition))
+                        val selection = activeParam.value.selection
+                        if (selection.start != selection.end) {
+                            val newText = buildString {
+                                append(activeParam.value.text.substring(0, selection.start))
+                                append(it)
+                                append(activeParam.value.text.substring(selection.end))
+                            }
+                            val newCursor = selection.start + it.length
+                            activeParam.value = TextFieldValue(
+                                text = newText,
+                                selection = TextRange(newCursor)
+                            )
                         }
+                        else {
+                            val oldValue = activeParam.value
+                            val cursorPosition = oldValue.selection.start
 
-                        val newCursorPosition = cursorPosition + it.length
-                        activeParam.value = TextFieldValue(
-                            text = newText,
-                            selection = TextRange(newCursorPosition)
-                        )
+                            val newText = buildString {
+                                append(oldValue.text.substring(0, cursorPosition))
+                                append(it)
+                                append(oldValue.text.substring(cursorPosition))
+                            }
+
+                            val newCursorPosition = cursorPosition + it.length
+                            activeParam.value = TextFieldValue(
+                                text = newText,
+                                selection = TextRange(newCursorPosition)
+                            )
+                        }
                     }
                 }
 
