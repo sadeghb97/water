@@ -64,7 +64,7 @@ fun NumberPad(
 
     val normalStyle = NumPadStyle()
     val formulaStyle = NumPadStyle(
-        bgColor = Color(0xFF2BBEC2),
+        bgColor = Color(0xFF26A1BD),
         fgColor = Color.White
     )
     val calcStyle = NumPadStyle(
@@ -153,20 +153,34 @@ fun NumberPad(
                         }
                     }) {
                         if (activeParam != null) {
-                            val value = activeParam.value
-                            val cursorPos = value.selection.start
-                            val text = value.text
-
-                            if (cursorPos > 0) {
+                            val selection = activeParam.value.selection
+                            if (selection.start != selection.end) {
                                 val newText = buildString {
-                                    append(text.substring(0, cursorPos - 1))
-                                    append(text.substring(cursorPos))
+                                    append(activeParam.value.text.substring(0, selection.start))
+                                    append(activeParam.value.text.substring(selection.end))
                                 }
-
+                                val newCursor = selection.start
                                 activeParam.value = TextFieldValue(
                                     text = newText,
-                                    selection = TextRange(cursorPos - 1)
+                                    selection = TextRange(newCursor)
                                 )
+                            }
+                            else {
+                                val value = activeParam.value
+                                val cursorPos = value.selection.start
+                                val text = value.text
+
+                                if (cursorPos > 0) {
+                                    val newText = buildString {
+                                        append(text.substring(0, cursorPos - 1))
+                                        append(text.substring(cursorPos))
+                                    }
+
+                                    activeParam.value = TextFieldValue(
+                                        text = newText,
+                                        selection = TextRange(cursorPos - 1)
+                                    )
+                                }
                             }
                         }
                     }
