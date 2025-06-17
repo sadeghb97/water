@@ -15,13 +15,15 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -34,11 +36,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.unit.DpOffset
-import androidx.compose.ui.unit.LayoutDirection
 import ir.sbpro.waterengineering.AppDataStore
 import ir.sbpro.waterengineering.AppSingleton
 import ir.sbpro.waterengineering.R
@@ -77,6 +77,7 @@ fun MainScreen(
 
     val coroutineScope = rememberCoroutineScope()
     val lang by appDataStore.languageFlow.collectAsState(appSingleton.startLanguage)
+    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     var isLangMenuExpanded = remember { mutableStateOf(false) }
     val aboutShow = remember { mutableStateOf(false) }
     val aboutAnimVisible = remember { mutableStateOf(false) }
@@ -103,6 +104,8 @@ fun MainScreen(
     }
 
     ScreenWrapper(
+        lang = lang,
+        drawerState = drawerState,
         onClick = {
             focusManager.clearFocus()
         }
@@ -121,17 +124,11 @@ fun MainScreen(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 IconButton(onClick = {
-                    aboutShow.value = true
                     coroutineScope.launch {
-                        delay(250)
-                        aboutAnimVisible.value = true
+                        drawerState.open()
                     }
                 }) {
-                    Image(
-                        painter = painterResource(id = R.drawable.info),
-                        contentDescription = lang.menu(),
-                        modifier = Modifier.size(24.dxp),
-                    )
+                    Icon(Icons.Default.Menu, contentDescription = lang.menu(), tint = Color.White)
                 }
 
                 Text(

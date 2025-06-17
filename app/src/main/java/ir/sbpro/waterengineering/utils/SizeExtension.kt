@@ -23,7 +23,7 @@ object SizeInterface {
         sh = configuration.screenHeightDp
         sw = configuration.screenWidthDp
 
-        println("XQQQSize: ($sh - $sw)")
+        println("XQQQSize2: ($sh - $sw - $userFontScale)")
 
         shr = sh.toDouble() / 795
         swr = sw.toDouble() / 393
