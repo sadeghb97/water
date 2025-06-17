@@ -89,6 +89,18 @@ class EnLang : AppLanguage {
     override fun sudokuSolverDescription() : String = "Using this app, you can solve all Sudoku puzzles with one click. Completely offline and without ads."
 
     override fun githubRepoTitle(): String = "Github Link"
+    override fun displaySize(): String = "Display Size"
+    override fun fontSize(): String = "Font Size"
+
+    override fun sizeOption(level: Int): String {
+        return when(level){
+            0 -> "XXS"
+            1 -> "XS"
+            2 -> "S"
+            3 -> "L"
+            else -> "XL"
+        }
+    }
 
     override fun getParameterTitle(paramKey: String) : String {
         return when(paramKey){

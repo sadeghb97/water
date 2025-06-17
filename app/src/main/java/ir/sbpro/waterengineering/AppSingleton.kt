@@ -21,7 +21,7 @@ class AppSingleton {
     }
 
     fun loadDetails(context: Context){
-        startLanguageCode = appDataStore.getSavedSharedLanguage().lowercase()
+        startLanguageCode = appDataStore.getSharedLanguage().lowercase()
         if(startLanguageCode != "fa" && startLanguageCode != "en"){
             startLanguageCode = "fa"
         }

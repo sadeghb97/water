@@ -21,18 +21,14 @@ import ir.sbpro.waterengineering.utils.dxp
 fun ScreenWrapper(
     lang: AppLanguage,
     navController: NavController,
-    drawerState: DrawerState,
+    drawerState: DrawerState?,
     modifier: Modifier = Modifier,
     onClick: () -> Unit = {},
     content: @Composable BoxScope.() -> Unit
 ){
     val interactionSource = remember { MutableInteractionSource() }
 
-    AppDrawer(
-        lang = lang,
-        navController = navController,
-        drawerState = drawerState
-    ) {
+    val box: @Composable () -> Unit = {
         Box(
             modifier = modifier
                 .fillMaxSize()
@@ -49,4 +45,15 @@ fun ScreenWrapper(
             content()
         }
     }
+
+    if(drawerState != null) {
+        AppDrawer(
+            lang = lang,
+            navController = navController,
+            drawerState = drawerState
+        ) {
+            box()
+        }
+    }
+    else box()
 }

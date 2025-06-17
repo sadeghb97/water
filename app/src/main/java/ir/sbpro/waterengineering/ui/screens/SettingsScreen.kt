@@ -10,6 +10,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.RadioButtonDefaults
@@ -31,7 +33,10 @@ import androidx.navigation.NavController
 import ir.sbpro.waterengineering.AppDataStore
 import ir.sbpro.waterengineering.AppSingleton
 import ir.sbpro.waterengineering.lang.AppLanguage
+import ir.sbpro.waterengineering.models.AppSettings
 import ir.sbpro.waterengineering.ui.components.ScreenWrapper
+import ir.sbpro.waterengineering.ui.components.SizeConfigConvert
+import ir.sbpro.waterengineering.ui.components.SizeSlider
 import ir.sbpro.waterengineering.utils.dxp
 import ir.sbpro.waterengineering.utils.sxp
 import kotlinx.coroutines.launch
@@ -46,7 +51,7 @@ fun SettingsScreen(
     val coroutineScope = rememberCoroutineScope()
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val lang by appDataStore.languageFlow.collectAsState(appSingleton.startLanguage)
-    //val clockSettings = appDataStore.clockSettingsFlow.collectAsState(ClockSettings())
+    val appSettings = appDataStore.appSettingsFlow.collectAsState(AppSettings())
 
     val toggleSetting: (Preferences.Key<Boolean>, Boolean) -> Unit = {prefKey, currentValue ->
         coroutineScope.launch {
@@ -59,13 +64,15 @@ fun SettingsScreen(
     ScreenWrapper(
         lang = lang,
         navController = navController,
-        drawerState = drawerState
+        drawerState = null
     ) {
         Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
+            horizontalAlignment = Alignment.Start,
             verticalArrangement = Arrangement.Top,
-            modifier = Modifier.padding(top = 35.dxp)
+            modifier = Modifier
+                .padding(top = 50.dxp, bottom = 70.dxp, start = 24.dxp, end = 24.dxp)
                 .fillMaxSize()
+                .verticalScroll(rememberScrollState())
         ) {
             Text(
                 lang.settings(),
@@ -73,7 +80,36 @@ fun SettingsScreen(
                 fontWeight = FontWeight.Bold,
                 color = Color.White
             )
+            Spacer(modifier = Modifier.height(30.dxp))
 
+            SizeSlider(
+                lang = lang,
+                label = lang.displaySize(),
+                initialValue = SizeConfigConvert.valueToOption(appSettings.value.displaySizeMultiplier)
+            ) {
+                coroutineScope.launch {
+                    val value: Float = SizeConfigConvert.optionToValue(it)
+                    appDataStore.safeTransaction { prefs ->
+                        prefs[AppDataStore.DISPLAY_SIZE] = value
+                    }
+                    appDataStore.saveSharedSizeConfig(AppDataStore.SHARED_SETTING_DISPLAY_SIZE, value)
+                }
+            }
+            Spacer(modifier = Modifier.height(30.dxp))
+
+            SizeSlider(
+                lang = lang,
+                label = lang.fontSize(),
+                initialValue = SizeConfigConvert.valueToOption(appSettings.value.fontSizeMultiplier)
+            ) {
+                coroutineScope.launch {
+                    val value: Float = SizeConfigConvert.optionToValue(it)
+                    appDataStore.safeTransaction { prefs ->
+                        prefs[AppDataStore.FONT_SIZE] = value
+                    }
+                    appDataStore.saveSharedSizeConfig(AppDataStore.SHARED_SETTING_FONT_SIZE, value)
+                }
+            }
             Spacer(modifier = Modifier.height(24.dxp))
 
             /*SettingToggle(lang.settingKeepScreenOn(), clockSettings.value.keepScreenOn) {
@@ -102,7 +138,7 @@ fun SettingsScreen(
 
             //Spacer(modifier = Modifier.height(32.dxp))
 
-            Text(lang.language(), fontWeight = FontWeight.Medium, color = Color.White)
+            Text(lang.language(), fontSize = 20.sxp, fontWeight = FontWeight.Medium, color = Color.White)
             Spacer(modifier = Modifier.height(8.dxp))
 
             val langCallback: (String) -> Unit = { code ->
@@ -128,7 +164,13 @@ fun SettingToggle(title: String, value: Boolean, onValueChange: (Boolean) -> Uni
             .padding(vertical = 8.dxp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(title, color = Color.White, modifier = Modifier.padding(end = 16.dxp).weight(1f))
+        Text(
+            title,
+            color = Color.White,
+            fontSize = 20.sxp,
+            modifier = Modifier.padding(end = 16.dxp).weight(1f)
+        )
+
         Switch(checked = value, onCheckedChange = onValueChange,
             colors = SwitchDefaults.colors(
                 checkedThumbColor = Color.White,

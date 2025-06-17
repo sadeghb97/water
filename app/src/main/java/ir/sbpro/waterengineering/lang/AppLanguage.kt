@@ -87,5 +87,9 @@ interface AppLanguage {
     fun githubRepoTitle(): String
     fun githubRepoUrl(): String = "https://github.com/sadeghb97/watereng_formulas"
 
+    fun displaySize(): String
+    fun fontSize(): String
+    fun sizeOption(level: Int): String
+
     fun getParameterTitle(paramKey: String) : String
 }

@@ -90,6 +90,18 @@ class FaLang : AppLanguage {
     override fun sudokuSolverDescription() : String = "با استفاده از این برنامه میتونی همه سودوکوهارو با یک کلیک حل کنی. کاملا آفلاین و بدون تبلیغات."
 
     override fun githubRepoTitle(): String = "لینک گیتهاب"
+    override fun displaySize(): String = "اندازه ویوها"
+    override fun fontSize(): String = "اندازه فونت"
+
+    override fun sizeOption(level: Int): String {
+        return when(level){
+            0 -> "خیلی کوچک"
+            1 -> "کوچک"
+            2 -> "متوسط"
+            3 -> "بزرگ"
+            else -> "خیلی بزرگ"
+        }
+    }
 
     override fun getParameterTitle(paramKey: String) : String {
         return when(paramKey){

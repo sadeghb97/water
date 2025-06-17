@@ -113,7 +113,8 @@ fun MainScreen(navController: NavController){
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Top,
-            modifier = Modifier.padding(bottom = bottomBoxHeight, top = 35.dxp)
+            modifier = Modifier
+                .padding(bottom = bottomBoxHeight, top = 35.dxp)
                 .fillMaxSize()
         ) {
             Row(

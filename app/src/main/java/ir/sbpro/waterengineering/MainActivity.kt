@@ -14,7 +14,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLayoutDirection
 import ir.sbpro.waterengineering.ui.navigations.Navigation
-import ir.sbpro.waterengineering.ui.screens.MainScreen
 import ir.sbpro.waterengineering.ui.theme.WaterEngineeringTheme
 import ir.sbpro.waterengineering.utils.SizeInterface
 import ir.sbpro.waterengineering.utils.TransparentNavigationBar
@@ -32,7 +31,7 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             TransparentNavigationBar()
-            SizeInterface.ExtendScreenSize()
+            SizeInterface.Init()
             val lang by appDataStore.languageFlow.collectAsState(appSingleton.startLanguage)
 
             CompositionLocalProvider(LocalLayoutDirection provides lang.getLayoutDirection()) {
