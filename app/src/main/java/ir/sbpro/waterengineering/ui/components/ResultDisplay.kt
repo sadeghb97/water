@@ -52,7 +52,7 @@ fun ResultDisplay(
         val titleStartPadding = if(lang.getLayoutDirection() == LayoutDirection.Ltr) 0.dxp else 12.dxp
         val colStartPadding = if(lang.getLayoutDirection() == LayoutDirection.Ltr) 16.dxp else 4.dxp
         val colEndPadding = if(lang.getLayoutDirection() == LayoutDirection.Ltr) 4.dxp else 16.dxp
-        val valueTextSize = if(minimal) 17.sxp else 22.sxp
+        val valueTextSize = if(minimal) 17.sxp else 20.sxp
 
         Column(
             modifier = Modifier
@@ -62,8 +62,9 @@ fun ResultDisplay(
         ) {
             Text(
                 text = label,
-                style = MaterialTheme.typography.titleSmall,
                 color = Color.Gray,
+                fontSize = 17.sxp,
+                fontWeight = FontWeight.Bold,
                 modifier = Modifier.padding(start = titleStartPadding).fillMaxWidth(),
                 textAlign = TextAlign.Start
             )

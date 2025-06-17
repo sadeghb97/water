@@ -2,7 +2,7 @@ package ir.sbpro.waterengineering.formulas
 
 import kotlin.math.pow
 
-class DFormula() : WaterEngFormula("d", listOf("x1", "x2", "y1", "y2")) {
+class DFormula() : WaterEngFormula("dis", "d", listOf("x1", "x2", "y1", "y2")) {
     override fun getResults(parametersState: ParametersState): List<FormulaResult> {
         val x1 = ParametersState.safeFloat(parametersState.params[0].value.text)
         val x2 = ParametersState.safeFloat(parametersState.params[1].value.text)

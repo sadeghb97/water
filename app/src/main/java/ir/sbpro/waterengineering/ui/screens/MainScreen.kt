@@ -44,6 +44,7 @@ import ir.sbpro.waterengineering.AppDataStore
 import ir.sbpro.waterengineering.AppSingleton
 import ir.sbpro.waterengineering.R
 import ir.sbpro.waterengineering.formulas.DFormula
+import ir.sbpro.waterengineering.formulas.FFormula
 import ir.sbpro.waterengineering.formulas.FormulaResult
 import ir.sbpro.waterengineering.formulas.HFormula
 import ir.sbpro.waterengineering.formulas.ParametersState
@@ -65,10 +66,10 @@ fun MainScreen(navController: NavController){
     val appSingleton = AppSingleton.getInstance()
     val appDataStore = appSingleton.appDataStore
 
-    val bottomBoxHeight = 325.dxp
+    val bottomBoxHeight = 250.dxp
 
     val formulasList = listOf<WaterEngFormula>(
-        HFormula(), VFormula(), DFormula()
+        FFormula(), HFormula(), VFormula(), DFormula()
     )
 
     val context = LocalContext.current
@@ -191,7 +192,7 @@ fun MainScreen(navController: NavController){
             LazyVerticalGrid(
                 columns = GridCells.Fixed(rowCells.intValue),
                 modifier = Modifier
-                    .padding(start = 20.dxp, end = 20.dxp, bottom = 12.dxp)
+                    .padding(start = 20.dxp, end = 20.dxp, bottom = 16.dxp)
                     .fillMaxWidth(),
                 verticalArrangement = Arrangement.spacedBy(12.dxp),
                 horizontalArrangement = Arrangement.spacedBy(12.dxp),
@@ -243,11 +244,12 @@ fun MainScreen(navController: NavController){
         ) {
             NumberPad(
                 lang = lang,
+                focusManager = focusManager,
                 activeParam = if (activeParamIndex.value != null) parametersState.value.params[activeParamIndex.value!!] else null,
                 formulas = formulasList,
                 onFormulaChange = {
                     focusManager.clearFocus()
-                    activeParamIndex.value = 0
+                    activeParamIndex.value = null
                     activeFormulaIndex.intValue = it
                     activeFormula.value = formulasList[activeFormulaIndex.intValue]
                     rowCells.intValue =

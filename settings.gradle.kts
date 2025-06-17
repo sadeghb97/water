@@ -19,5 +19,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "Water Engineering"
+rootProject.name = "HydroCalc"
 include(":app")

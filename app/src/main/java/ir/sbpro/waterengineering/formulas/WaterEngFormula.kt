@@ -6,7 +6,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.text.input.TextFieldValue
 import ir.sbpro.waterengineering.AppSingleton
 
-abstract class WaterEngFormula(val formulaKey: String, val parameters: List<String>) {
+abstract class WaterEngFormula(val formulaKey: String, val symbol: String, val parameters: List<String>) {
     fun paramsLen() : Int {
         return parameters.size
     }

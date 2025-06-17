@@ -3,6 +3,10 @@ package ir.sbpro.waterengineering.ui.components
 import android.view.MotionEvent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.indication
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
@@ -15,6 +19,7 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
+import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.MutableState
@@ -26,6 +31,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusManager
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.input.pointer.pointerInteropFilter
@@ -52,6 +59,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun NumberPad(
     lang: AppLanguage,
+    focusManager: FocusManager,
     activeParam: MutableState<TextFieldValue>?,
     formulas: List<WaterEngFormula>,
     onFormulaChange: (Int) -> Unit,
@@ -79,34 +87,28 @@ fun NumberPad(
     )
 
     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(3),
-            modifier = modifier
-                .padding(vertical = 12.dxp, horizontal = 30.dxp)
-                .fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(12.dxp),
-            horizontalArrangement = Arrangement.spacedBy(12.dxp),
-            userScrollEnabled = false
-        ) {
-            formulas.forEachIndexed { index, item ->
-                item {
-                    KeyTextBox(cs, item.formulaKey.uppercase(), formulaStyle) {
-                        onFormulaChange(index)
-                    }
-                }
-            }
-        }
-    }
-
-    CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
         Row(
             modifier = Modifier.padding(top = 12.dxp, start = 30.dxp, end = 30.dxp)
         ) {
             LazyVerticalGrid(
+                columns = GridCells.Fixed(1),
+                modifier = modifier.padding(end = 6.dxp).weight(1f),
+                verticalArrangement = Arrangement.spacedBy(12.dxp),
+                horizontalArrangement = Arrangement.spacedBy(12.dxp),
+                userScrollEnabled = false
+            ) {
+                formulas.forEachIndexed { index, item ->
+                    item {
+                        KeyTextBox(cs, focusManager, item.symbol, formulaStyle) {
+                            onFormulaChange(index)
+                        }
+                    }
+                }
+            }
+
+            LazyVerticalGrid(
                 columns = GridCells.Fixed(3),
-                modifier = modifier
-                    .padding(end = 6.dxp)
-                    .weight(3f),
+                modifier = modifier.padding(horizontal = 6.dxp).weight(3.25f),
                 verticalArrangement = Arrangement.spacedBy(12.dxp),
                 horizontalArrangement = Arrangement.spacedBy(12.dxp),
                 userScrollEnabled = false
@@ -146,20 +148,20 @@ fun NumberPad(
                 }
 
                 items(buttons.size) { index ->
-                    KeyTextBox(cs, buttons[index], normalStyle) {
+                    KeyTextBox(cs, focusManager, buttons[index], normalStyle) {
                         updateTextValue(buttons[index])
                     }
                 }
 
                 item() {
-                    KeyTextBox(cs, ".", normalStyle) {
+                    KeyTextBox(cs, focusManager, ".", normalStyle) {
                         if (activeParam != null && !activeParam.value.text.contains("."))
                             updateTextValue(".")
                     }
                 }
 
                 item() {
-                    KeySymbolBox(cs, R.drawable.backspace, normalStyle, onLongClick = {
+                    KeySymbolBox(cs, focusManager, R.drawable.backspace, normalStyle, onLongClick = {
                         if (activeParam != null) {
                             activeParam.value = TextFieldValue(
                                 text = "",
@@ -204,15 +206,13 @@ fun NumberPad(
 
             LazyVerticalGrid(
                 columns = GridCells.Fixed(1),
-                modifier = modifier
-                    .padding(start = 6.dxp)
-                    .weight(1f),
+                modifier = modifier.padding(start = 6.dxp).weight(1f),
                 verticalArrangement = Arrangement.spacedBy(12.dxp),
                 horizontalArrangement = Arrangement.spacedBy(12.dxp),
                 userScrollEnabled = false
             ) {
                 item {
-                    KeySymbolBox(cs, R.drawable.content_copy, normalStyle) {
+                    KeySymbolBox(cs, focusManager, R.drawable.content_copy, normalStyle) {
                         activeParam?.let {
                             copyToClipboard(context, "Parameter", it.value.text)
                             triggerVibration(context, 50, 50)
@@ -221,7 +221,7 @@ fun NumberPad(
                 }
 
                 item {
-                    KeySymbolBox(cs, R.drawable.content_paste, normalStyle) {
+                    KeySymbolBox(cs, focusManager, R.drawable.content_paste, normalStyle) {
                         activeParam?.let { param ->
                             getTextFromClipboard(context)?.let { clipText ->
                                 param.value = param.value.copy(
@@ -235,7 +235,9 @@ fun NumberPad(
                 }
 
                 item {
-                    KeySymbolBox(cs,
+                    KeySymbolBox(
+                        cs,
+                        focusManager,
                         imageId = if(lang.getLayoutDirection() == LayoutDirection.Ltr) R.drawable.arrow_right
                         else R.drawable.arrow_left,
                         normalStyle
@@ -245,7 +247,7 @@ fun NumberPad(
                 }
 
                 item {
-                    KeySymbolBox(cs, R.drawable.function, calcStyle) {
+                    KeySymbolBox(cs, focusManager, R.drawable.function, calcStyle) {
                         onCalculate()
                     }
                 }
@@ -258,11 +260,13 @@ fun NumberPad(
 @Composable
 fun KeyBox(
     coroutineScope: CoroutineScope,
+    focusManager: FocusManager,
     numPadStyle: NumPadStyle,
     onClick: () -> Unit,
     onLongClick: () -> Unit = {},
     content: @Composable BoxScope.() -> Unit
 ){
+    val interactionSource = remember { MutableInteractionSource() }
     val pressCounter = remember { mutableIntStateOf(0) }
     val pressedTime = remember { mutableLongStateOf(0L) }
 
@@ -272,9 +276,11 @@ fun KeyBox(
             .height(48.dxp)
             .clip(RoundedCornerShape(12.dxp))
             .background(numPadStyle.bgColor)
+            .indication(interactionSource, ripple())
             .pointerInteropFilter { event ->
                 when (event.action) {
                     MotionEvent.ACTION_DOWN -> {
+                        interactionSource.tryEmit(PressInteraction.Press(Offset.Zero))
                         pressedTime.longValue = System.currentTimeMillis()
                         pressCounter.intValue++
                         val pv = pressCounter.intValue
@@ -288,10 +294,15 @@ fun KeyBox(
                         true
                     }
                     MotionEvent.ACTION_UP -> {
+                        interactionSource.tryEmit(PressInteraction.Release(PressInteraction.Press(Offset.Zero)))
                         if(pressedTime.longValue > 0){
                             onClick()
                             pressedTime.longValue = 0L
                         }
+                        true
+                    }
+                    MotionEvent.ACTION_CANCEL -> {
+                        interactionSource.tryEmit(PressInteraction.Cancel(PressInteraction.Press(Offset.Zero)))
                         true
                     }
                     else -> false
@@ -306,16 +317,22 @@ fun KeyBox(
 @Composable
 fun KeyTextBox(
     coroutineScope: CoroutineScope,
+    focusManager: FocusManager,
     text: String,
     numPadStyle: NumPadStyle,
     onLongClick: () -> Unit = {},
     onClick: () -> Unit,
 ){
-    KeyBox(coroutineScope = coroutineScope, numPadStyle = numPadStyle, onClick = onClick, onLongClick = onLongClick) {
+    KeyBox(coroutineScope = coroutineScope,
+        focusManager = focusManager,
+        numPadStyle = numPadStyle,
+        onClick = onClick,
+        onLongClick = onLongClick
+    ) {
         Text(
             text = text,
             color = numPadStyle.fgColor,
-            fontSize = 24.sxp,
+            fontSize = 22.sxp,
             fontWeight = FontWeight.Bold
         )
     }
@@ -324,12 +341,19 @@ fun KeyTextBox(
 @Composable
 fun KeySymbolBox(
     coroutineScope: CoroutineScope,
+    focusManager: FocusManager,
     imageId: Int,
     numPadStyle: NumPadStyle,
     onLongClick: () -> Unit = {},
     onClick: () -> Unit,
 ){
-    KeyBox(coroutineScope = coroutineScope, numPadStyle = numPadStyle, onClick = onClick, onLongClick = onLongClick) {
+    KeyBox(
+        coroutineScope = coroutineScope,
+        focusManager = focusManager,
+        numPadStyle = numPadStyle,
+        onClick = onClick,
+        onLongClick = onLongClick
+    ) {
         Image(
             painter = painterResource(id = imageId),
             contentDescription = null,

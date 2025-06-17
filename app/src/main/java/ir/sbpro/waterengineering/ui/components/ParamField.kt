@@ -61,7 +61,7 @@ fun ParamField(label: String,
                 modifier = modifier
                     .focusRequester(finalFocusRequester),
                 interactionSource = interactionSource,
-                label = { Text(text = label, fontSize = 13.sxp) },
+                label = { Text(text = label, fontSize = 14.sxp) },
                 singleLine = true,
                 readOnly = readOnly,
                 colors = TextFieldDefaults.colors(

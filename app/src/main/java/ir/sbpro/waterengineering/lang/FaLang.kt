@@ -10,7 +10,7 @@ class FaLang : AppLanguage {
     override fun getLayoutDirection() = LayoutDirection.Rtl
     override fun getDefaultFont(): FontFamily { return FontFamily(Font(R.font.iransans_mobile)) }
 
-    override fun appName() = "فرمول‌های مهندسی آب"
+    override fun appName() = "فرمول‌های هیدرولیک"
     override fun start() = "شروع"
     override fun settings() = "تنظیمات"
     override fun language() = "زبان"
@@ -111,7 +111,7 @@ class FaLang : AppLanguage {
             "y2" -> "عرض نقطه دوم"
             "dis" -> "فاصله (متر)"
             "q" -> "دبی جریان (لیتر بر ثانیه)"
-            "d" -> "قطر داخلی لوله (میلی‌متر)"
+            "d" -> "قطر لوله (میلی‌متر)"
             "v" -> "سرعت جریان در لوله (متر بر ثانیه)"
             "n" -> "تعداد خروجی"
             "f" -> "ضریب اصلاح"

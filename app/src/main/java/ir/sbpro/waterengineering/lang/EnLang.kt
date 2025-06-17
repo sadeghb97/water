@@ -8,7 +8,7 @@ class EnLang : AppLanguage {
     override fun getLayoutDirection() = LayoutDirection.Ltr
     override fun getDefaultFont(): FontFamily { return FontFamily.SansSerif }
 
-    override fun appName() = "Water Engineering Formulas"
+    override fun appName() = "HydroCalc"
     override fun start() = "Start"
     override fun settings() = "Settings"
     override fun language() = "Language"
@@ -109,7 +109,7 @@ class EnLang : AppLanguage {
             "y1" -> "Y1"
             "y2" -> "Y2"
             "dis" -> "Distance (m)"
-            "q" -> "Flow Rate (m³/s)"
+            "q" -> "Flow Rate (L/s)"
             "d" -> "Pipe diameter (mm)"
             "v" -> "Flow velocity (m/s)"
             "n" -> "Number of bends"
