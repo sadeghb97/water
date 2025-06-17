@@ -191,9 +191,9 @@ fun MainScreen(navController: NavController){
             LazyVerticalGrid(
                 columns = GridCells.Fixed(rowCells.intValue),
                 modifier = Modifier
-                    .padding(start = 20.dxp, end = 20.dxp, bottom = 10.dxp)
+                    .padding(start = 20.dxp, end = 20.dxp, bottom = 12.dxp)
                     .fillMaxWidth(),
-                verticalArrangement = Arrangement.spacedBy(3.dxp),
+                verticalArrangement = Arrangement.spacedBy(12.dxp),
                 horizontalArrangement = Arrangement.spacedBy(12.dxp),
                 userScrollEnabled = false
             ) {
