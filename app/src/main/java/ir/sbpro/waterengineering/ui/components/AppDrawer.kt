@@ -34,6 +34,7 @@ fun AppDrawer(
     val contactUsShow = remember { mutableStateOf(false) }
     val noNetShow = remember { mutableStateOf(false) }
     val aboutAnimationVisible = remember { mutableStateOf(false) }
+    val contactAnimationVisible = remember { mutableStateOf(false) }
 
     val dialogShowing = nopShow.value || aboutUsShow.value || contactUsShow.value ||
             noNetShow.value || drawerState.isOpen
@@ -77,8 +78,9 @@ fun AppDrawer(
                 label = { Text(text = lang.contactUs()) },
                 selected = false,
                 onClick = {
-                    contactUsShow.value = true
                     defaultDismiss()
+                    contactUsShow.value = true
+                    contactAnimationVisible.value = true
                 }
             )
 
@@ -108,7 +110,8 @@ fun AppDrawer(
         }
     }
 
-    ContactUsDialog(context = context, active = contactUsShow.value) {
+    ContactUsDialog(context = context, active = contactUsShow.value, animVisible = contactAnimationVisible.value) {
+        contactAnimationVisible.value = false
         contactUsShow.value = false
     }
 }

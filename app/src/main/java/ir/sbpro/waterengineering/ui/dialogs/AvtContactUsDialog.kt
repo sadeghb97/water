@@ -4,6 +4,9 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -38,51 +41,61 @@ import ir.sbpro.waterengineering.utils.sxp
 fun AvtContactUsDialog(
     context: Context,
     active: Boolean,
+    animVisible: Boolean,
     telegramId: String,
     instagramId: String,
     gmail: String,
     onDismiss: () -> Unit
 ) {
-    AvtDialog (
-        modifier = Modifier.clickable {},
-        active = active,
-        onDismiss = onDismiss,
+    AnimatedVisibility(
+        visible = animVisible,
+        enter = fadeIn(animationSpec = tween(2000))
     ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier
-                .padding(top = 18.dxp, bottom = 18.dxp, start = 16.dxp, end = 16.dxp)
-                .fillMaxWidth()
+
+        AvtDialog(
+            modifier = Modifier.clickable {},
+            active = active,
+            onDismiss = onDismiss,
         ) {
-            ContactItem(title = "@$telegramId", imageId = R.drawable.ic_telegram) {
-                try {
-                    val telegramIntent = Intent(Intent.ACTION_VIEW)
-                    telegramIntent.data = Uri.parse("tg://resolve?domain=$telegramId")
-                    telegramIntent.setPackage("org.telegram.messenger")
-                    context.startActivity(telegramIntent)
-                } catch (e: Exception) {}
-            }
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier
+                    .padding(top = 18.dxp, bottom = 18.dxp, start = 16.dxp, end = 16.dxp)
+                    .fillMaxWidth()
+            ) {
+                ContactItem(title = "@$telegramId", imageId = R.drawable.ic_telegram) {
+                    try {
+                        val telegramIntent = Intent(Intent.ACTION_VIEW)
+                        telegramIntent.data = Uri.parse("tg://resolve?domain=$telegramId")
+                        telegramIntent.setPackage("org.telegram.messenger")
+                        context.startActivity(telegramIntent)
+                    } catch (e: Exception) {
+                    }
+                }
 
-            ContactItem(title = "@$instagramId", imageId = R.drawable.ic_instagram) {
-                try {
-                    val intentDirect = Intent(Intent.ACTION_SEND)
-                    intentDirect.component = ComponentName(
-                        "com.instagram.android",
-                        "com.instagram.direct.share.handler.DirectShareHandlerActivity"
-                    )
-                    intentDirect.type = "text/plain"
-                    intentDirect.putExtra(Intent.EXTRA_TEXT, "Your message here")
-                    context.startActivity(intentDirect)
-                } catch (e: Exception) {}
-            }
+                ContactItem(title = "@$instagramId", imageId = R.drawable.ic_instagram) {
+                    try {
+                        val intentDirect = Intent(Intent.ACTION_SEND)
+                        intentDirect.component = ComponentName(
+                            "com.instagram.android",
+                            "com.instagram.direct.share.handler.DirectShareHandlerActivity"
+                        )
+                        intentDirect.type = "text/plain"
+                        intentDirect.putExtra(Intent.EXTRA_TEXT, "Your message here")
+                        context.startActivity(intentDirect)
+                    } catch (e: Exception) {
+                    }
+                }
 
-            ContactItem(title = gmail, imageId = R.drawable.ic_gmail) {
-                try {
-                    val intent = Intent(Intent.ACTION_SEND)
-                    intent.type = "plain/text"
-                    intent.putExtra(Intent.EXTRA_EMAIL, arrayOf<String>(gmail))
-                    context.startActivity(Intent.createChooser(intent, ""))
-                } catch (e: Exception) {}
+                ContactItem(title = gmail, imageId = R.drawable.ic_gmail) {
+                    try {
+                        val intent = Intent(Intent.ACTION_SEND)
+                        intent.type = "plain/text"
+                        intent.putExtra(Intent.EXTRA_EMAIL, arrayOf<String>(gmail))
+                        context.startActivity(Intent.createChooser(intent, ""))
+                    } catch (e: Exception) {
+                    }
+                }
             }
         }
     }
