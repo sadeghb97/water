@@ -71,7 +71,8 @@ fun ParamField(label: String,
                 ),
                 textStyle = LocalTextStyle.current.copy(
                     textDirection = TextDirection.Ltr,
-                    textAlign = TextAlign.Start
+                    textAlign = TextAlign.Start,
+                    fontSize = 19.sxp
                 )
             )
         }
