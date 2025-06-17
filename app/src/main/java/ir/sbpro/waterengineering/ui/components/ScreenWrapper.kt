@@ -13,12 +13,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.navigation.NavController
 import ir.sbpro.waterengineering.lang.AppLanguage
 import ir.sbpro.waterengineering.utils.dxp
 
 @Composable
 fun ScreenWrapper(
     lang: AppLanguage,
+    navController: NavController,
     drawerState: DrawerState,
     modifier: Modifier = Modifier,
     onClick: () -> Unit = {},
@@ -28,6 +30,7 @@ fun ScreenWrapper(
 
     AppDrawer(
         lang = lang,
+        navController = navController,
         drawerState = drawerState
     ) {
         Box(

@@ -24,6 +24,7 @@ import androidx.compose.ui.draw.paint
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
+import androidx.navigation.NavController
 import ir.sbpro.waterengineering.utils.dxp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -32,7 +33,6 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AvtDrawer(
-    //navController: NavController,
     drawerState: DrawerState,
     bgPainter: Painter,
     drBGC: Color,

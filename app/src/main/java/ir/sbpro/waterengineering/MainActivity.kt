@@ -1,6 +1,5 @@
 package ir.sbpro.waterengineering
 
-import ir.sbpro.waterengineering.AppSingleton
 import android.annotation.SuppressLint
 import android.content.pm.ActivityInfo
 import android.os.Bundle
@@ -14,6 +13,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLayoutDirection
+import ir.sbpro.waterengineering.ui.navigations.Navigation
 import ir.sbpro.waterengineering.ui.screens.MainScreen
 import ir.sbpro.waterengineering.ui.theme.WaterEngineeringTheme
 import ir.sbpro.waterengineering.utils.SizeInterface
@@ -38,7 +38,7 @@ class MainActivity : ComponentActivity() {
             CompositionLocalProvider(LocalLayoutDirection provides lang.getLayoutDirection()) {
                 WaterEngineeringTheme(lang = lang) {
                     Surface(modifier = Modifier.fillMaxSize()) {
-                        MainScreen(lang)
+                        Navigation(this)
                     }
                 }
             }

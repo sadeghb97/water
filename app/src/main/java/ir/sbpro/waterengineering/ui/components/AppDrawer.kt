@@ -11,16 +11,19 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.navigation.NavController
 import ir.sbpro.waterengineering.R
 import ir.sbpro.waterengineering.lang.AppLanguage
 import ir.sbpro.waterengineering.ui.dialogs.AboutUsDialog
+import ir.sbpro.waterengineering.ui.dialogs.ContactUsDialog
+import ir.sbpro.waterengineering.ui.navigations.Fragment
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @Composable
 fun AppDrawer(
     lang: AppLanguage,
-    //navController: NavController,
+    navController: NavController,
     drawerState: DrawerState,
     content: @Composable () -> Unit
 ){
@@ -46,7 +49,6 @@ fun AppDrawer(
     }
 
     AvtDrawer(
-        //navController = navController,
         drawerState = drawerState,
         bgPainter = painterResource(R.drawable.drawerbg),
         drBGC = Color(0xFFE5D9D9),
@@ -66,7 +68,7 @@ fun AppDrawer(
                 selected = false,
                 onClick = {
                     defaultDismiss()
-                    //navController.navigate(Fragment.settings.route)
+                    navController.navigate(Fragment.settings.route)
                 }
             )
 
@@ -104,5 +106,9 @@ fun AppDrawer(
             aboutAnimationVisible.value = false
             aboutUsShow.value = false
         }
+    }
+
+    ContactUsDialog(context = context, active = contactUsShow.value) {
+        contactUsShow.value = false
     }
 }

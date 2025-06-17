@@ -39,6 +39,7 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.unit.DpOffset
+import androidx.navigation.NavController
 import ir.sbpro.waterengineering.AppDataStore
 import ir.sbpro.waterengineering.AppSingleton
 import ir.sbpro.waterengineering.R
@@ -60,9 +61,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @Composable
-fun MainScreen(
-    lang: AppLanguage
-){
+fun MainScreen(navController: NavController){
     val appSingleton = AppSingleton.getInstance()
     val appDataStore = appSingleton.appDataStore
 
@@ -105,6 +104,7 @@ fun MainScreen(
 
     ScreenWrapper(
         lang = lang,
+        navController = navController,
         drawerState = drawerState,
         onClick = {
             focusManager.clearFocus()
