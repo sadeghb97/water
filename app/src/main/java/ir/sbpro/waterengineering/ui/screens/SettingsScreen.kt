@@ -1,7 +1,10 @@
 package ir.sbpro.waterengineering.ui.screens
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -15,17 +18,19 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.RadioButtonDefaults
-import androidx.compose.material3.Switch
-import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.datastore.preferences.core.Preferences
@@ -37,6 +42,7 @@ import ir.sbpro.waterengineering.models.AppSettings
 import ir.sbpro.waterengineering.ui.components.ScreenWrapper
 import ir.sbpro.waterengineering.ui.components.SizeConfigConvert
 import ir.sbpro.waterengineering.ui.components.SizeSlider
+import ir.sbpro.waterengineering.ui.dialogs.ColorPickerDialog
 import ir.sbpro.waterengineering.utils.dxp
 import ir.sbpro.waterengineering.utils.sxp
 import kotlinx.coroutines.launch
@@ -45,11 +51,16 @@ import kotlinx.coroutines.launch
 fun SettingsScreen(
     navController: NavController
 ) {
+    val PC_PRIMARY = "PC_PRIMARY"
+    val PC_SECONDARY = "PC_SECONDARY"
+
     val context = LocalContext.current
     val appSingleton = AppSingleton.getInstance()
     val appDataStore = appSingleton.appDataStore
     val coroutineScope = rememberCoroutineScope()
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+    val pickColor: MutableState<Color?> = remember { mutableStateOf(null) }
+    val pcCode: MutableState<String?> = remember { mutableStateOf(null) }
     val lang by appDataStore.languageFlow.collectAsState(appSingleton.startLanguage)
     val appSettings = appDataStore.appSettingsFlow.collectAsState(AppSettings())
 
@@ -70,7 +81,7 @@ fun SettingsScreen(
             horizontalAlignment = Alignment.Start,
             verticalArrangement = Arrangement.Top,
             modifier = Modifier
-                .padding(top = 50.dxp, bottom = 70.dxp, start = 24.dxp, end = 24.dxp)
+                .padding(top = 50.dxp, start = 24.dxp, end = 24.dxp)
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
         ) {
@@ -78,7 +89,7 @@ fun SettingsScreen(
                 lang.settings(),
                 fontSize = 24.sxp,
                 fontWeight = FontWeight.Bold,
-                color = Color.White
+                color = appSettings.value.secondaryColor
             )
             Spacer(modifier = Modifier.height(30.dxp))
 
@@ -110,26 +121,46 @@ fun SettingsScreen(
                     appDataStore.saveSharedSizeConfig(AppDataStore.SHARED_SETTING_FONT_SIZE, value)
                 }
             }
+            Spacer(modifier = Modifier.height(36.dxp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(
+                    lang.primaryColor(),
+                    fontSize = 21.sxp,
+                    fontWeight = FontWeight.Bold,
+                    color = appSettings.value.secondaryColor
+                )
+                Spacer(modifier = Modifier.width(16.dxp))
+
+                SelectColorBox(appSettings.value.primaryColor){
+                    pickColor.value = appSettings.value.primaryColor
+                    pcCode.value = PC_PRIMARY
+                }
+            }
+            Spacer(modifier = Modifier.height(24.dxp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(
+                    lang.secondaryColor(),
+                    fontSize = 21.sxp,
+                    fontWeight = FontWeight.Bold,
+                    color = appSettings.value.secondaryColor
+                )
+                Spacer(modifier = Modifier.width(16.dxp))
+
+                SelectColorBox(appSettings.value.secondaryColor){
+                    pickColor.value = appSettings.value.secondaryColor
+                    pcCode.value = PC_SECONDARY
+                }
+            }
             Spacer(modifier = Modifier.height(24.dxp))
 
             /*SettingToggle(lang.settingKeepScreenOn(), clockSettings.value.keepScreenOn) {
                 toggleSetting(AppDataStore.SETTING_KEEP_SCREEN_ON, clockSettings.value.keepScreenOn)
-            }
-
-            SettingToggle(lang.settingShowMoveNumber(), clockSettings.value.showMoveNumber) {
-                toggleSetting(AppDataStore.SETTING_SHOW_MOVE_NUMBER, clockSettings.value.showMoveNumber)
-            }
-
-            SettingToggle(lang.settingShowSide(), clockSettings.value.showSide) {
-                toggleSetting(AppDataStore.SETTING_SHOW_SIDE, clockSettings.value.showSide)
-            }
-
-            SettingToggle(lang.settingDisplayAccurateTime(), clockSettings.value.displayAccurateTime) {
-                toggleSetting(AppDataStore.SETTING_DISPLAY_ACCURATE_TIME, clockSettings.value.displayAccurateTime)
-            }
-
-            SettingToggle(lang.settingPlaySoundAfterMove(), clockSettings.value.playSoundAfterMove) {
-                toggleSetting(AppDataStore.SETTING_PLAY_SOUND_AFTER_MOVE, clockSettings.value.playSoundAfterMove)
             }
 
             SettingToggle(lang.settingVibrateAfterMove(), clockSettings.value.vibrateAfterMove) {
@@ -138,7 +169,12 @@ fun SettingsScreen(
 
             //Spacer(modifier = Modifier.height(32.dxp))
 
-            Text(lang.language(), fontSize = 20.sxp, fontWeight = FontWeight.Medium, color = Color.White)
+            Text(
+                lang.language(),
+                fontSize = 21.sxp,
+                fontWeight = FontWeight.Bold,
+                color = appSettings.value.secondaryColor
+            )
             Spacer(modifier = Modifier.height(8.dxp))
 
             val langCallback: (String) -> Unit = { code ->
@@ -150,12 +186,37 @@ fun SettingsScreen(
                 }
             }
 
-            LanguageOption("English", "en", lang) { langCallback("en") }
-            LanguageOption("فارسی", "fa", lang) { langCallback("fa") }
+            LanguageOption(appSettings.value, lang, "English", "en") { langCallback("en") }
+            LanguageOption(appSettings.value, lang, "فارسی", "fa") { langCallback("fa") }
         }
+    }
+
+    ColorPickerDialog(
+        confirmText = lang.selectColor(),
+        active = pickColor.value != null,
+        initColor = pickColor.value,
+        onDismiss = {
+            pickColor.value = null
+            pcCode.value = null
+        }
+    ) { chosenColor ->
+        val dsKey = if(pcCode.value == PC_PRIMARY) AppDataStore.PRIMARY_COLOR else AppDataStore.SECONDARY_COLOR
+        val sharedPrefKey = if(pcCode.value == PC_PRIMARY) AppDataStore.SHARED_SETTING_PRIMARY_COLOR
+        else AppDataStore.SHARED_SETTING_SECONDARY_COLOR
+
+        coroutineScope.launch {
+            appDataStore.safeTransaction { prefs ->
+                prefs[dsKey] = chosenColor.toArgb()
+            }
+        }
+        appDataStore.saveSharedColorConfig(sharedPrefKey, chosenColor)
+
+        pickColor.value = null
+        pcCode.value = null
     }
 }
 
+/*
 @Composable
 fun SettingToggle(title: String, value: Boolean, onValueChange: (Boolean) -> Unit) {
     Row(
@@ -180,10 +241,30 @@ fun SettingToggle(title: String, value: Boolean, onValueChange: (Boolean) -> Uni
             )
         )
     }
+}*/
+
+@Composable
+fun SelectColorBox(color: Color, onClick: () -> Unit){
+    Box(
+        modifier = Modifier
+            .height(40.dxp)
+            .width(100.dxp)
+            .background(color)
+            .border(color = Color.Black, width = 2.dxp)
+            .clickable {
+                onClick()
+            }
+    )
 }
 
 @Composable
-fun LanguageOption(label: String, value: String, lang: AppLanguage, onSelected: (String) -> Unit) {
+fun LanguageOption(
+    appSettings: AppSettings,
+    lang: AppLanguage,
+    label: String,
+    value: String,
+    onSelected: (String) -> Unit
+) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
@@ -194,12 +275,12 @@ fun LanguageOption(label: String, value: String, lang: AppLanguage, onSelected: 
             selected = lang.getLangCode() == value,
             onClick = { onSelected(value) },
             colors = RadioButtonDefaults.colors(
-                selectedColor = Color.White,
-                unselectedColor = Color.White,
+                selectedColor = appSettings.secondaryColor,
+                unselectedColor = appSettings.secondaryColor,
                 disabledSelectedColor = Color.Gray
             )
         )
         Spacer(modifier = Modifier.width(8.dxp))
-        Text(label, color = Color.White)
+        Text(label, color = appSettings.secondaryColor)
     }
 }

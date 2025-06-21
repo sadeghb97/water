@@ -92,6 +92,10 @@ class FaLang : AppLanguage {
     override fun githubRepoTitle(): String = "لینک گیتهاب"
     override fun displaySize(): String = "اندازه ویوها"
     override fun fontSize(): String = "اندازه فونت"
+    override fun primaryColor(): String = "رنگ اصلی"
+    override fun secondaryColor(): String = "رنگ ثانویه"
+    override fun exampleText(): String = "متن نمونه"
+    override fun selectColor(): String = "انتخاب رنگ"
 
     override fun sizeOption(level: Int): String {
         return when(level){

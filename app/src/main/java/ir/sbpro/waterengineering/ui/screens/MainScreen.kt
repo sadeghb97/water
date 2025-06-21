@@ -38,6 +38,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextRange
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.DpOffset
 import androidx.navigation.NavController
 import ir.sbpro.waterengineering.AppDataStore
@@ -121,7 +122,7 @@ fun MainScreen(navController: NavController){
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(bottom = 8.dxp, start = 12.dxp, end = 12.dxp),
+                    .padding(bottom = 16.dxp, start = 16.dxp, end = 16.dxp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
@@ -130,12 +131,18 @@ fun MainScreen(navController: NavController){
                         drawerState.open()
                     }
                 }) {
-                    Icon(Icons.Default.Menu, contentDescription = lang.menu(), tint = Color.White)
+                    Icon(
+                        Icons.Default.Menu,
+                        modifier = Modifier.size(30.dxp),
+                        contentDescription = lang.menu(),
+                        tint = Color.White
+                    )
                 }
 
                 Text(
                     text = lang.appName(),
-                    fontSize = 20.sxp,
+                    fontSize = 22.sxp,
+                    fontWeight = FontWeight.Bold,
                     color = Color.White
                 )
 
@@ -144,7 +151,7 @@ fun MainScreen(navController: NavController){
                         Image(
                             painter = painterResource(id = R.drawable.translate),
                             contentDescription = lang.menu(),
-                            modifier = Modifier.size(24.dxp),
+                            modifier = Modifier.size(30.dxp),
                         )
                     }
 

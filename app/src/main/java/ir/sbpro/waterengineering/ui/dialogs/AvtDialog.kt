@@ -1,7 +1,9 @@
 package ir.sbpro.waterengineering.ui.dialogs
 
+import android.view.MotionEvent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,14 +20,17 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.input.pointer.pointerInteropFilter
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import ir.sbpro.waterengineering.utils.dxp
 import ir.sbpro.waterengineering.utils.sxp
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
 @Composable
 public fun AvtDialog(
     modifier: Modifier = Modifier,
@@ -43,16 +48,23 @@ public fun AvtDialog(
             modifier = Modifier
                 .background(Color.DarkGray.copy(alpha = 0.6f))
                 .fillMaxSize()
-                .clickable {
-                    onDismiss()
-                }
+                .pointerInput(Unit) {
+                    detectTapGestures(onTap = {
+                        onDismiss()
+                    })
+                },
         ) {
             Card(
                 modifier = Modifier
                     .padding(horizontal = 36.dxp)
                     .fillMaxWidth()
                     .wrapContentSize(Alignment.Center)
-                    .align(Alignment.Center),
+                    .align(Alignment.Center)
+                    .pointerInput(Unit) {
+                        detectTapGestures(onTap = {
+                            //it is required
+                        })
+                    },
                 colors = CardDefaults.cardColors(
                     containerColor = Color.White,
                 ),

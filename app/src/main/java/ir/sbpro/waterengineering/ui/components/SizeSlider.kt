@@ -14,6 +14,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import ir.sbpro.waterengineering.lang.AppLanguage
 import ir.sbpro.waterengineering.utils.dxp
@@ -43,9 +44,9 @@ fun SizeSlider(
     ) {
         Text(
             text = label,
-            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.Bold,
             color = Color.White,
-            fontSize = 20.sxp,
+            fontSize = 21.sxp,
             modifier = Modifier
         )
 
@@ -74,7 +75,7 @@ fun SizeSlider(
             options.forEach { label ->
                 Text(
                     text = label,
-                    style = MaterialTheme.typography.labelSmall,
+                    fontSize = 14.sxp,
                     textAlign = TextAlign.Center,
                     color = Color.White,
                     modifier = Modifier.weight(1f)
