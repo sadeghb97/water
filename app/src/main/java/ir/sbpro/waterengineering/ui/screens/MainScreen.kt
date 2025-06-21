@@ -33,7 +33,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
@@ -51,7 +51,7 @@ import ir.sbpro.waterengineering.formulas.HFormula
 import ir.sbpro.waterengineering.formulas.ParametersState
 import ir.sbpro.waterengineering.formulas.VFormula
 import ir.sbpro.waterengineering.formulas.WaterEngFormula
-import ir.sbpro.waterengineering.lang.AppLanguage
+import ir.sbpro.waterengineering.models.AppSettings
 import ir.sbpro.waterengineering.ui.components.NumberPad
 import ir.sbpro.waterengineering.ui.components.ParamField
 import ir.sbpro.waterengineering.ui.components.ResultDisplay
@@ -78,6 +78,7 @@ fun MainScreen(navController: NavController){
 
     val coroutineScope = rememberCoroutineScope()
     val lang by appDataStore.languageFlow.collectAsState(appSingleton.startLanguage)
+    val appSettings by appDataStore.appSettingsFlow.collectAsState(AppSettings())
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     var isLangMenuExpanded = remember { mutableStateOf(false) }
     val aboutShow = remember { mutableStateOf(false) }
@@ -105,6 +106,7 @@ fun MainScreen(navController: NavController){
     }
 
     ScreenWrapper(
+        appSettings = appSettings,
         lang = lang,
         navController = navController,
         drawerState = drawerState,
@@ -135,7 +137,7 @@ fun MainScreen(navController: NavController){
                         Icons.Default.Menu,
                         modifier = Modifier.size(30.dxp),
                         contentDescription = lang.menu(),
-                        tint = Color.White
+                        tint = appSettings.lightColor
                     )
                 }
 
@@ -143,13 +145,14 @@ fun MainScreen(navController: NavController){
                     text = lang.appName(),
                     fontSize = 22.sxp,
                     fontWeight = FontWeight.Bold,
-                    color = Color.White
+                    color = appSettings.lightColor
                 )
 
                 Box {
                     IconButton(onClick = { isLangMenuExpanded.value = true }) {
                         Image(
                             painter = painterResource(id = R.drawable.translate),
+                            colorFilter = ColorFilter.tint(appSettings.lightColor),
                             contentDescription = lang.menu(),
                             modifier = Modifier.size(30.dxp),
                         )
@@ -201,13 +204,14 @@ fun MainScreen(navController: NavController){
                 modifier = Modifier
                     .padding(start = 20.dxp, end = 20.dxp, bottom = 16.dxp)
                     .fillMaxWidth(),
-                verticalArrangement = Arrangement.spacedBy(12.dxp),
+                verticalArrangement = Arrangement.spacedBy(16.dxp),
                 horizontalArrangement = Arrangement.spacedBy(12.dxp),
                 userScrollEnabled = false
             ) {
                 parametersState.value.params.forEachIndexed { index, item ->
                     item {
                         ParamField(
+                            appSettings = appSettings,
                             label = lang.getParameterTitle(activeFormula.value.parameters[index]),
                             textState = item,
                             focusRequester = parametersState.value.focuses[index]
@@ -232,6 +236,7 @@ fun MainScreen(navController: NavController){
             ) {
                 formulaResults.value.forEachIndexed { rIndex, result ->
                     ResultDisplay(
+                        appSettings = appSettings,
                         lang = lang,
                         label = lang.getParameterTitle(result.key),
                         value = result.value?.toString(),
@@ -250,6 +255,7 @@ fun MainScreen(navController: NavController){
                 .align(Alignment.BottomCenter)
         ) {
             NumberPad(
+                appSettings = appSettings,
                 lang = lang,
                 focusManager = focusManager,
                 activeParam = if (activeParamIndex.value != null) parametersState.value.params[activeParamIndex.value!!] else null,
@@ -285,7 +291,7 @@ fun MainScreen(navController: NavController){
         }
     }
 
-    AboutUsDialog(lang = lang, active = aboutShow.value, animationVisible = aboutAnimVisible.value) {
+    AboutUsDialog(appSettings = appSettings, lang = lang, active = aboutShow.value, animationVisible = aboutAnimVisible.value) {
         coroutineScope.launch {
             aboutAnimVisible.value = false
             aboutShow.value = false

@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
@@ -17,12 +16,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import ir.sbpro.waterengineering.lang.AppLanguage
+import ir.sbpro.waterengineering.models.AppSettings
 import ir.sbpro.waterengineering.utils.dxp
 import ir.sbpro.waterengineering.utils.sxp
 import kotlin.math.roundToInt
 
 @Composable
 fun SizeSlider(
+    appSettings: AppSettings,
     lang: AppLanguage,
     label: String,
     initialValue: Int,
@@ -45,7 +46,7 @@ fun SizeSlider(
         Text(
             text = label,
             fontWeight = FontWeight.Bold,
-            color = Color.White,
+            color = appSettings.lightColor,
             fontSize = 21.sxp,
             modifier = Modifier
         )
@@ -77,7 +78,7 @@ fun SizeSlider(
                     text = label,
                     fontSize = 14.sxp,
                     textAlign = TextAlign.Center,
-                    color = Color.White,
+                    color = appSettings.lightColor,
                     modifier = Modifier.weight(1f)
                 )
             }

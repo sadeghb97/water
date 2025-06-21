@@ -29,14 +29,14 @@ class AppDataStore (val context: Context) {
         val LANGUAGE_KEY = stringPreferencesKey("language")
         val DISPLAY_SIZE = floatPreferencesKey("display_size")
         val FONT_SIZE = floatPreferencesKey("font_size")
-        val PRIMARY_COLOR = intPreferencesKey("primary_color")
-        val SECONDARY_COLOR = intPreferencesKey("secondary_color")
+        val DARK_COLOR = intPreferencesKey("dark_color")
+        val LIGHT_COLOR = intPreferencesKey("light_color")
         val SHARED_SETTINGS_TOKEN = "shared_settings"
         val SHARED_SETTING_LANGUAGE = "shared_setting_language"
         val SHARED_SETTING_DISPLAY_SIZE = "shared_setting_display_size"
         val SHARED_SETTING_FONT_SIZE= "shared_setting_font_size"
-        val SHARED_SETTING_PRIMARY_COLOR = "shared_setting_primary_color"
-        val SHARED_SETTING_SECONDARY_COLOR= "shared_setting_secondary_color"
+        val SHARED_SETTING_DARK_COLOR = "shared_setting_dark_color"
+        val SHARED_SETTING_LIGHT_COLOR= "shared_setting_light_color"
     }
 
     private val PARAM_PREFIX_KEY = "param_"
@@ -52,20 +52,20 @@ class AppDataStore (val context: Context) {
     val appSettingsFlow: Flow<AppSettings> = context.dataStore.data.map { preferences ->
         val dm: Float = preferences[DISPLAY_SIZE] ?: getSharedSizeConfig(SHARED_SETTING_DISPLAY_SIZE)
         val fm: Float = preferences[FONT_SIZE] ?: getSharedSizeConfig(SHARED_SETTING_FONT_SIZE)
-        val primaryColorCode = preferences[PRIMARY_COLOR]
-        val secondaryColorCode = preferences[SECONDARY_COLOR]
+        val darkColorCode = preferences[DARK_COLOR]
+        val lightColorCode = preferences[LIGHT_COLOR]
 
-        val primaryColor = if(primaryColorCode != null) Color(primaryColorCode)
-        else getSharedConfigColor(SHARED_SETTING_PRIMARY_COLOR)
+        val darkColor = if(darkColorCode != null) Color(darkColorCode)
+        else getSharedConfigColor(SHARED_SETTING_DARK_COLOR)
 
-        val secondaryColor = if(secondaryColorCode != null) Color(secondaryColorCode)
-        else getSharedConfigColor(SHARED_SETTING_SECONDARY_COLOR)
+        val lightColor = if(lightColorCode != null) Color(lightColorCode)
+        else getSharedConfigColor(SHARED_SETTING_LIGHT_COLOR)
 
         AppSettings(
             displaySizeMultiplier = dm,
             fontSizeMultiplier = fm,
-            primaryColor = primaryColor,
-            secondaryColor = secondaryColor
+            darkColor = darkColor,
+            lightColor = lightColor
         )
     }
 
@@ -101,7 +101,8 @@ class AppDataStore (val context: Context) {
     fun getSharedConfigColor(config: String) : Color {
         val colorCode = sharedPrefs.getInt(config, 0)
         return if(colorCode > 0) Color(colorCode)
-        else Color.Black
+        else if(config == SHARED_SETTING_DARK_COLOR) Color.Black
+        else Color.White
     }
 
     fun saveFormulaResult(formula: WaterEngFormula, parametersState: ParametersState, formulaResults: List<FormulaResult>){

@@ -8,10 +8,10 @@ import ir.sbpro.waterengineering.utils.SizeInterface
 data class AppSettings(
     val displaySizeMultiplier: Float = SizeInterface.displaySizeMultiplier.value,
     val fontSizeMultiplier: Float = SizeInterface.fontSizeMultiplier.value,
-    val primaryColor: Color = AppSingleton.getInstance().appDataStore.getSharedConfigColor(
-        AppDataStore.SHARED_SETTING_PRIMARY_COLOR
+    val darkColor: Color = AppSingleton.getInstance().appDataStore.getSharedConfigColor(
+        AppDataStore.SHARED_SETTING_DARK_COLOR
     ),
-    val secondaryColor: Color = AppSingleton.getInstance().appDataStore.getSharedConfigColor(
-        AppDataStore.SHARED_SETTING_SECONDARY_COLOR
+    val lightColor: Color = AppSingleton.getInstance().appDataStore.getSharedConfigColor(
+        AppDataStore.SHARED_SETTING_LIGHT_COLOR
     )
 )

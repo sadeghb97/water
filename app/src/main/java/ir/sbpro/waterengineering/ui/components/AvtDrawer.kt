@@ -25,6 +25,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.navigation.NavController
+import ir.sbpro.waterengineering.models.AppSettings
 import ir.sbpro.waterengineering.utils.dxp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -33,6 +34,7 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AvtDrawer(
+    appSettings: AppSettings,
     drawerState: DrawerState,
     bgPainter: Painter,
     drBGC: Color,
@@ -79,7 +81,7 @@ fun AvtDrawer(
                                 .padding(end = 20.dxp)
                                 .fillMaxWidth()
                         ){
-                            Text(appName, modifier = Modifier.padding(16.dxp))
+                            Text(appName, color = appSettings.darkColor, modifier = Modifier.padding(16.dxp))
 
                             /*if(userTier == UserTier.PREMIUM){
                                 Image(

@@ -89,11 +89,13 @@ interface AppLanguage {
 
     fun displaySize(): String
     fun fontSize(): String
-    fun primaryColor(): String
-    fun secondaryColor(): String
+    fun darkColor(): String
+    fun lightColor(): String
     fun exampleText(): String
     fun selectColor(): String
-    fun sizeOption(level: Int): String
+    fun resetSettingsButton(): String
+    fun resetSettingsConfirm(): String
 
+    fun sizeOption(level: Int): String
     fun getParameterTitle(paramKey: String) : String
 }

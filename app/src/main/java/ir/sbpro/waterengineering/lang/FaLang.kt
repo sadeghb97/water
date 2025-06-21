@@ -92,10 +92,12 @@ class FaLang : AppLanguage {
     override fun githubRepoTitle(): String = "لینک گیتهاب"
     override fun displaySize(): String = "اندازه ویوها"
     override fun fontSize(): String = "اندازه فونت"
-    override fun primaryColor(): String = "رنگ اصلی"
-    override fun secondaryColor(): String = "رنگ ثانویه"
+    override fun darkColor(): String = "رنگ تیره اصلی"
+    override fun lightColor(): String = "رنگ روشن اصلی"
     override fun exampleText(): String = "متن نمونه"
     override fun selectColor(): String = "انتخاب رنگ"
+    override fun resetSettingsButton(): String = "بازگرداندن تنظیمات به حالت اولیه"
+    override fun resetSettingsConfirm(): String = "تمام تنظیمات به حالت اولیه برخواهند گشت. آیا مطمئنید؟"
 
     override fun sizeOption(level: Int): String {
         return when(level){
@@ -113,13 +115,13 @@ class FaLang : AppLanguage {
             "x2" -> "طول نقطه دوم"
             "y1" -> "عرض نقطه اول"
             "y2" -> "عرض نقطه دوم"
-            "dis" -> "فاصله (متر)"
-            "q" -> "دبی جریان (لیتر بر ثانیه)"
-            "d" -> "قطر لوله (میلی‌متر)"
+            "dis" -> "فاصله (m)"
+            "q" -> "دبی جریان (L/s)"
+            "d" -> "قطر لوله (mm)"
             "v" -> "سرعت جریان در لوله (متر بر ثانیه)"
             "n" -> "تعداد خروجی"
             "f" -> "ضریب اصلاح"
-            "l" -> "طول لوله (متر)"
+            "l" -> "طول لوله (m)"
             "c" -> "ضریب زبری لوله"
             "h" -> "افت هد"
             else -> paramKey

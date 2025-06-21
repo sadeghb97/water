@@ -91,10 +91,12 @@ class EnLang : AppLanguage {
     override fun githubRepoTitle(): String = "Github Link"
     override fun displaySize(): String = "Display Size"
     override fun fontSize(): String = "Font Size"
-    override fun primaryColor(): String = "Primary Color"
-    override fun secondaryColor(): String = "Secondary Color"
+    override fun darkColor(): String = "Dark Color"
+    override fun lightColor(): String = "Light Color"
     override fun exampleText(): String = "Example Text"
     override fun selectColor(): String = "Select Color"
+    override fun resetSettingsButton(): String = "Reset settings"
+    override fun resetSettingsConfirm(): String = "All settings will reset. are you sure?"
 
     override fun sizeOption(level: Int): String {
         return when(level){

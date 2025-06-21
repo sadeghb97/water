@@ -1,2 +1,2 @@
 # water
-A simple application for calculate Water Enginnering formulas
+A simple application for calculate Hydrolic formulas

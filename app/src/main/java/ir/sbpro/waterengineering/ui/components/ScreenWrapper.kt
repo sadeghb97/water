@@ -15,10 +15,12 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavController
 import ir.sbpro.waterengineering.lang.AppLanguage
+import ir.sbpro.waterengineering.models.AppSettings
 import ir.sbpro.waterengineering.utils.dxp
 
 @Composable
 fun ScreenWrapper(
+    appSettings: AppSettings,
     lang: AppLanguage,
     navController: NavController,
     drawerState: DrawerState?,
@@ -48,6 +50,7 @@ fun ScreenWrapper(
 
     if(drawerState != null) {
         AppDrawer(
+            appSettings = appSettings,
             lang = lang,
             navController = navController,
             drawerState = drawerState

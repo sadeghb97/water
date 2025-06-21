@@ -11,7 +11,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -27,6 +26,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.LayoutDirection
 import ir.sbpro.waterengineering.R
 import ir.sbpro.waterengineering.lang.AppLanguage
+import ir.sbpro.waterengineering.models.AppSettings
 import ir.sbpro.waterengineering.utils.copyToClipboard
 import ir.sbpro.waterengineering.utils.dxp
 import ir.sbpro.waterengineering.utils.sxp
@@ -34,6 +34,7 @@ import ir.sbpro.waterengineering.utils.triggerVibration
 
 @Composable
 fun ResultDisplay(
+    appSettings: AppSettings,
     lang: AppLanguage,
     label: String,
     value: String?,
@@ -80,6 +81,7 @@ fun ResultDisplay(
                         fontWeight = FontWeight.Bold,
                         fontSize = valueTextSize,
                         textAlign = TextAlign.Start,
+                        color = appSettings.darkColor,
                         modifier = Modifier.weight(1f)
                     )
 
@@ -94,7 +96,7 @@ fun ResultDisplay(
                         Image(
                             painter = painterResource(id = R.drawable.content_copy),
                             contentDescription = null,
-                            colorFilter = ColorFilter.tint(Color.Black),
+                            colorFilter = ColorFilter.tint(appSettings.darkColor),
                             modifier = Modifier.size(24.dxp),
                         )
                     }

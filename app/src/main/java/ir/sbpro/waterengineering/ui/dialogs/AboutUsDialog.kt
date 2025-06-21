@@ -19,11 +19,13 @@ import androidx.compose.ui.res.painterResource
 import ir.sbpro.waterengineering.AppSingleton
 import ir.sbpro.waterengineering.R
 import ir.sbpro.waterengineering.lang.AppLanguage
+import ir.sbpro.waterengineering.models.AppSettings
 import ir.sbpro.waterengineering.ui.components.LinkedText
 import ir.sbpro.waterengineering.utils.dxp
 
 @Composable
 public fun AboutUsDialog(
+    appSettings: AppSettings,
     lang: AppLanguage,
     active: Boolean,
     animationVisible: Boolean,
@@ -66,6 +68,7 @@ public fun AboutUsDialog(
 
             Text(
                 text = lang.appName(),
+                color = appSettings.darkColor,
                 modifier = Modifier.padding(12.dxp),
             )
             Text(
@@ -73,7 +76,8 @@ public fun AboutUsDialog(
             )
             LinkedText(
                 text = lang.githubRepoTitle(),
-                url = lang.githubRepoUrl()
+                url = lang.githubRepoUrl(),
+                color = appSettings.darkColor
             )
         }
     }

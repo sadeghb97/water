@@ -15,17 +15,18 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.InterceptPlatformTextInput
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDirection
+import ir.sbpro.waterengineering.models.AppSettings
 import ir.sbpro.waterengineering.utils.sxp
 import kotlinx.coroutines.awaitCancellation
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun ParamField(label: String,
+fun ParamField(appSettings: AppSettings,
+               label: String,
                textState: MutableState<TextFieldValue>,
                modifier: Modifier = Modifier,
                focusRequester: FocusRequester? = null,
@@ -36,8 +37,8 @@ fun ParamField(label: String,
     val finalFocusRequester = focusRequester ?: remember { FocusRequester() }
     val interactionSource = remember { MutableInteractionSource() }
 
-    val labelLightColor = Color.White
-    val labelDarkColor = Color.Black
+    val labelLightColor = appSettings.lightColor
+    val labelDarkColor = appSettings.darkColor
 
     LaunchedEffect(interactionSource) {
         interactionSource.interactions.collect { interaction ->
@@ -61,7 +62,7 @@ fun ParamField(label: String,
                 modifier = modifier
                     .focusRequester(finalFocusRequester),
                 interactionSource = interactionSource,
-                label = { Text(text = label, fontSize = 14.sxp) },
+                label = { Text(text = label, fontSize = 17.sxp) },
                 singleLine = true,
                 readOnly = readOnly,
                 colors = TextFieldDefaults.colors(

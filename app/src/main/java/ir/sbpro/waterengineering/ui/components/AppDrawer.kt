@@ -14,6 +14,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.navigation.NavController
 import ir.sbpro.waterengineering.R
 import ir.sbpro.waterengineering.lang.AppLanguage
+import ir.sbpro.waterengineering.models.AppSettings
 import ir.sbpro.waterengineering.ui.dialogs.AboutUsDialog
 import ir.sbpro.waterengineering.ui.dialogs.ContactUsDialog
 import ir.sbpro.waterengineering.ui.navigations.Fragment
@@ -22,6 +23,7 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun AppDrawer(
+    appSettings: AppSettings,
     lang: AppLanguage,
     navController: NavController,
     drawerState: DrawerState,
@@ -50,6 +52,7 @@ fun AppDrawer(
     }
 
     AvtDrawer(
+        appSettings = appSettings,
         drawerState = drawerState,
         bgPainter = painterResource(R.drawable.drawerbg),
         drBGC = Color(0xFFE5D9D9),
@@ -65,7 +68,7 @@ fun AppDrawer(
         drawerContent = {
             NavigationDrawerItem(
                 colors = drItemBGC,
-                label = { Text(text = lang.settings()) },
+                label = { Text(text = lang.settings(), color = appSettings.darkColor) },
                 selected = false,
                 onClick = {
                     defaultDismiss()
@@ -75,7 +78,7 @@ fun AppDrawer(
 
             NavigationDrawerItem(
                 colors = drItemBGC,
-                label = { Text(text = lang.contactUs()) },
+                label = { Text(text = lang.contactUs(), color = appSettings.darkColor) },
                 selected = false,
                 onClick = {
                     defaultDismiss()
@@ -86,7 +89,7 @@ fun AppDrawer(
 
             NavigationDrawerItem(
                 colors = drItemBGC,
-                label = { Text(text = lang.aboutApp()) },
+                label = { Text(text = lang.aboutApp(), color = appSettings.darkColor) },
                 selected = false,
                 onClick = {
                     defaultDismiss()
@@ -103,14 +106,19 @@ fun AppDrawer(
         content = content
     )
 
-    AboutUsDialog(lang = lang, active = aboutUsShow.value, animationVisible = aboutAnimationVisible.value) {
+    AboutUsDialog(appSettings = appSettings, lang = lang, active = aboutUsShow.value, animationVisible = aboutAnimationVisible.value) {
         coroutineScope.launch {
             aboutAnimationVisible.value = false
             aboutUsShow.value = false
         }
     }
 
-    ContactUsDialog(context = context, active = contactUsShow.value, animVisible = contactAnimationVisible.value) {
+    ContactUsDialog(
+        appSettings = appSettings,
+        context = context,
+        active = contactUsShow.value,
+        animVisible = contactAnimationVisible.value
+    ) {
         contactAnimationVisible.value = false
         contactUsShow.value = false
     }

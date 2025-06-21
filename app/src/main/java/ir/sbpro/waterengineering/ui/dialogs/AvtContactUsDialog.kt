@@ -33,12 +33,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.LayoutDirection
 import ir.sbpro.waterengineering.R
+import ir.sbpro.waterengineering.models.AppSettings
 import ir.sbpro.waterengineering.utils.dxp
 import ir.sbpro.waterengineering.utils.sxp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AvtContactUsDialog(
+    appSettings: AppSettings,
     context: Context,
     active: Boolean,
     animVisible: Boolean,
@@ -63,7 +65,7 @@ fun AvtContactUsDialog(
                     .padding(top = 18.dxp, bottom = 18.dxp, start = 16.dxp, end = 16.dxp)
                     .fillMaxWidth()
             ) {
-                ContactItem(title = "@$telegramId", imageId = R.drawable.ic_telegram) {
+                ContactItem(appSettings = appSettings, title = "@$telegramId", imageId = R.drawable.ic_telegram) {
                     try {
                         val telegramIntent = Intent(Intent.ACTION_VIEW)
                         telegramIntent.data = Uri.parse("tg://resolve?domain=$telegramId")
@@ -73,7 +75,7 @@ fun AvtContactUsDialog(
                     }
                 }
 
-                ContactItem(title = "@$instagramId", imageId = R.drawable.ic_instagram) {
+                ContactItem(appSettings = appSettings, title = "@$instagramId", imageId = R.drawable.ic_instagram) {
                     try {
                         val intentDirect = Intent(Intent.ACTION_SEND)
                         intentDirect.component = ComponentName(
@@ -87,7 +89,7 @@ fun AvtContactUsDialog(
                     }
                 }
 
-                ContactItem(title = gmail, imageId = R.drawable.ic_gmail) {
+                ContactItem(appSettings = appSettings, title = gmail, imageId = R.drawable.ic_gmail) {
                     try {
                         val intent = Intent(Intent.ACTION_SEND)
                         intent.type = "plain/text"
@@ -102,7 +104,7 @@ fun AvtContactUsDialog(
 }
 
 @Composable
-fun ContactItem(title: String, imageId: Int, callback: () -> Unit){
+fun ContactItem(appSettings: AppSettings, title: String, imageId: Int, callback: () -> Unit){
     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
         Card(
             modifier = Modifier
@@ -136,7 +138,7 @@ fun ContactItem(title: String, imageId: Int, callback: () -> Unit){
                         TextStyle(
                             fontWeight = FontWeight.Bold,
                             fontSize = 16.sxp,
-                            color = Color.Black
+                            color = appSettings.darkColor
                         )
                     )
                 )

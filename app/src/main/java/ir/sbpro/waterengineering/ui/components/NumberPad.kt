@@ -3,7 +3,6 @@ package ir.sbpro.waterengineering.ui.components
 import android.view.MotionEvent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.indication
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.PressInteraction
@@ -46,6 +45,7 @@ import androidx.compose.ui.unit.LayoutDirection
 import ir.sbpro.waterengineering.R
 import ir.sbpro.waterengineering.formulas.WaterEngFormula
 import ir.sbpro.waterengineering.lang.AppLanguage
+import ir.sbpro.waterengineering.models.AppSettings
 import ir.sbpro.waterengineering.utils.copyToClipboard
 import ir.sbpro.waterengineering.utils.dxp
 import ir.sbpro.waterengineering.utils.getTextFromClipboard
@@ -58,6 +58,7 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun NumberPad(
+    appSettings: AppSettings,
     lang: AppLanguage,
     focusManager: FocusManager,
     activeParam: MutableState<TextFieldValue>?,
@@ -70,14 +71,17 @@ fun NumberPad(
     val context = LocalContext.current
     val cs = rememberCoroutineScope()
 
-    val normalStyle = NumPadStyle()
+    val normalStyle = NumPadStyle(
+        bgColor = Color.White,
+        fgColor = appSettings.darkColor
+    )
     val formulaStyle = NumPadStyle(
         bgColor = Color(0xFF26A1BD),
-        fgColor = Color.White
+        fgColor = appSettings.lightColor
     )
     val calcStyle = NumPadStyle(
         bgColor = Color(0XFFEE66DD),
-        fgColor = Color.White
+        fgColor = appSettings.lightColor
     )
 
     val buttons = listOf(
@@ -364,6 +368,6 @@ fun KeySymbolBox(
 }
 
 data class NumPadStyle(
-    val bgColor: Color = Color.White,
-    val fgColor: Color = Color.Black
+    val bgColor: Color,
+    val fgColor: Color
 )

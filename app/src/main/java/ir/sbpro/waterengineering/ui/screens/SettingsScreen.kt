@@ -43,6 +43,7 @@ import ir.sbpro.waterengineering.ui.components.ScreenWrapper
 import ir.sbpro.waterengineering.ui.components.SizeConfigConvert
 import ir.sbpro.waterengineering.ui.components.SizeSlider
 import ir.sbpro.waterengineering.ui.dialogs.ColorPickerDialog
+import ir.sbpro.waterengineering.ui.dialogs.ConfirmDialog
 import ir.sbpro.waterengineering.utils.dxp
 import ir.sbpro.waterengineering.utils.sxp
 import kotlinx.coroutines.launch
@@ -63,6 +64,7 @@ fun SettingsScreen(
     val pcCode: MutableState<String?> = remember { mutableStateOf(null) }
     val lang by appDataStore.languageFlow.collectAsState(appSingleton.startLanguage)
     val appSettings = appDataStore.appSettingsFlow.collectAsState(AppSettings())
+    val resetDialogShow = remember { mutableStateOf(false) }
 
     val toggleSetting: (Preferences.Key<Boolean>, Boolean) -> Unit = {prefKey, currentValue ->
         coroutineScope.launch {
@@ -73,6 +75,7 @@ fun SettingsScreen(
     }
 
     ScreenWrapper(
+        appSettings = appSettings.value,
         lang = lang,
         navController = navController,
         drawerState = null
@@ -89,11 +92,12 @@ fun SettingsScreen(
                 lang.settings(),
                 fontSize = 24.sxp,
                 fontWeight = FontWeight.Bold,
-                color = appSettings.value.secondaryColor
+                color = appSettings.value.lightColor
             )
             Spacer(modifier = Modifier.height(30.dxp))
 
             SizeSlider(
+                appSettings = appSettings.value,
                 lang = lang,
                 label = lang.displaySize(),
                 initialValue = SizeConfigConvert.valueToOption(appSettings.value.displaySizeMultiplier)
@@ -109,6 +113,7 @@ fun SettingsScreen(
             Spacer(modifier = Modifier.height(30.dxp))
 
             SizeSlider(
+                appSettings = appSettings.value,
                 lang = lang,
                 label = lang.fontSize(),
                 initialValue = SizeConfigConvert.valueToOption(appSettings.value.fontSizeMultiplier)
@@ -127,33 +132,33 @@ fun SettingsScreen(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text(
-                    lang.primaryColor(),
+                    lang.darkColor(),
                     fontSize = 21.sxp,
                     fontWeight = FontWeight.Bold,
-                    color = appSettings.value.secondaryColor
+                    color = appSettings.value.lightColor
                 )
                 Spacer(modifier = Modifier.width(16.dxp))
 
-                SelectColorBox(appSettings.value.primaryColor){
-                    pickColor.value = appSettings.value.primaryColor
+                SelectColorBox(appSettings.value.darkColor){
+                    pickColor.value = appSettings.value.darkColor
                     pcCode.value = PC_PRIMARY
                 }
             }
-            Spacer(modifier = Modifier.height(24.dxp))
+            Spacer(modifier = Modifier.height(30.dxp))
 
             Row(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text(
-                    lang.secondaryColor(),
+                    lang.lightColor(),
                     fontSize = 21.sxp,
                     fontWeight = FontWeight.Bold,
-                    color = appSettings.value.secondaryColor
+                    color = appSettings.value.lightColor
                 )
                 Spacer(modifier = Modifier.width(16.dxp))
 
-                SelectColorBox(appSettings.value.secondaryColor){
-                    pickColor.value = appSettings.value.secondaryColor
+                SelectColorBox(appSettings.value.lightColor){
+                    pickColor.value = appSettings.value.lightColor
                     pcCode.value = PC_SECONDARY
                 }
             }
@@ -173,7 +178,7 @@ fun SettingsScreen(
                 lang.language(),
                 fontSize = 21.sxp,
                 fontWeight = FontWeight.Bold,
-                color = appSettings.value.secondaryColor
+                color = appSettings.value.lightColor
             )
             Spacer(modifier = Modifier.height(8.dxp))
 
@@ -188,6 +193,19 @@ fun SettingsScreen(
 
             LanguageOption(appSettings.value, lang, "English", "en") { langCallback("en") }
             LanguageOption(appSettings.value, lang, "فارسی", "fa") { langCallback("fa") }
+            Spacer(modifier = Modifier.height(30.dxp))
+
+            Text(
+                lang.resetSettingsButton(),
+                fontSize = 16.sxp,
+                fontWeight = FontWeight.Bold,
+                color = Color.Red,
+                modifier = Modifier
+                    .padding(start = 4.dxp)
+                    .clickable {
+                        resetDialogShow.value = true
+                    }
+            )
         }
     }
 
@@ -200,9 +218,9 @@ fun SettingsScreen(
             pcCode.value = null
         }
     ) { chosenColor ->
-        val dsKey = if(pcCode.value == PC_PRIMARY) AppDataStore.PRIMARY_COLOR else AppDataStore.SECONDARY_COLOR
-        val sharedPrefKey = if(pcCode.value == PC_PRIMARY) AppDataStore.SHARED_SETTING_PRIMARY_COLOR
-        else AppDataStore.SHARED_SETTING_SECONDARY_COLOR
+        val dsKey = if(pcCode.value == PC_PRIMARY) AppDataStore.DARK_COLOR else AppDataStore.LIGHT_COLOR
+        val sharedPrefKey = if(pcCode.value == PC_PRIMARY) AppDataStore.SHARED_SETTING_DARK_COLOR
+        else AppDataStore.SHARED_SETTING_LIGHT_COLOR
 
         coroutineScope.launch {
             appDataStore.safeTransaction { prefs ->
@@ -213,6 +231,26 @@ fun SettingsScreen(
 
         pickColor.value = null
         pcCode.value = null
+    }
+
+    ConfirmDialog(
+        appSettings = appSettings.value,
+        active = resetDialogShow.value,
+        description = lang.resetSettingsConfirm(),
+        onDismiss = { resetDialogShow.value = false }
+    ) {
+        coroutineScope.launch {
+            appDataStore.safeTransaction { prefs ->
+                prefs[AppDataStore.DISPLAY_SIZE] = 1f
+                prefs[AppDataStore.FONT_SIZE] = 1f
+                prefs[AppDataStore.DARK_COLOR] = Color.Black.toArgb()
+                prefs[AppDataStore.LIGHT_COLOR] = Color.White.toArgb()
+            }
+            appDataStore.saveSharedSizeConfig(AppDataStore.SHARED_SETTING_DISPLAY_SIZE, 1f)
+            appDataStore.saveSharedSizeConfig(AppDataStore.SHARED_SETTING_FONT_SIZE, 1f)
+            appDataStore.saveSharedColorConfig(AppDataStore.SHARED_SETTING_DARK_COLOR, Color.Black)
+            appDataStore.saveSharedColorConfig(AppDataStore.SHARED_SETTING_LIGHT_COLOR, Color.White)
+        }
     }
 }
 
@@ -275,12 +313,12 @@ fun LanguageOption(
             selected = lang.getLangCode() == value,
             onClick = { onSelected(value) },
             colors = RadioButtonDefaults.colors(
-                selectedColor = appSettings.secondaryColor,
-                unselectedColor = appSettings.secondaryColor,
+                selectedColor = appSettings.lightColor,
+                unselectedColor = appSettings.lightColor,
                 disabledSelectedColor = Color.Gray
             )
         )
         Spacer(modifier = Modifier.width(8.dxp))
-        Text(label, color = appSettings.secondaryColor)
+        Text(label, color = appSettings.lightColor)
     }
 }

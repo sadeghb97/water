@@ -14,12 +14,12 @@ import ir.sbpro.waterengineering.utils.dxp
 import androidx.core.net.toUri
 
 @Composable
-fun LinkedText(text: String, url: String) {
+fun LinkedText(text: String, url: String, color: Color = Color.Black) {
     val context = LocalContext.current
 
     Text(
         text = text,
-        color = Color.Black,
+        color = color,
         textDecoration = TextDecoration.Underline,
         modifier = Modifier
             .padding(8.dxp)
