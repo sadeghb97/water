@@ -76,7 +76,7 @@ fun SizeSlider(
             options.forEach { label ->
                 Text(
                     text = label,
-                    fontSize = 14.sxp,
+                    fontSize = 13.sxp,
                     textAlign = TextAlign.Center,
                     color = appSettings.lightColor,
                     modifier = Modifier.weight(1f)
